@@ -498,7 +498,9 @@
 <script>
 // 2026-07-03 时间路由
 const now = Date.now();
-if (now >= new Date('2026-07-03T14:30:00+08:00').getTime()) {
+if (now >= new Date('2026-07-03T18:00:00+08:00').getTime()) {
+  window.location.replace('poster.html');
+} else if (now >= new Date('2026-07-03T14:30:00+08:00').getTime()) {
   window.location.replace('mission.html');
 }
 </script>
