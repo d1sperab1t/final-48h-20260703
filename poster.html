@@ -1,0 +1,1063 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>莫干山 48H Monster Speed</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --ink: #080907;
+      --night: #11140E;
+      --pine: #1F2A1C;
+      --moss: #7A8D4A;
+      --paper: #EAE0C8;
+      --paper2: #CBBF9C;
+      --clay: #B86435;
+      --rust: #7D3824;
+      --fog: rgba(234, 224, 200, 0.14);
+      --line: rgba(234, 224, 200, 0.18);
+      --muted: #928A75;
+      --dim: #575545;
+      --shadow: rgba(0, 0, 0, 0.58);
+    }
+
+    body {
+      min-height: 100vh;
+      color: var(--paper);
+      background:
+        radial-gradient(circle at 18% 12%, rgba(247,244,234,0.18), transparent 30%),
+        radial-gradient(circle at 86% 20%, rgba(0,151,168,0.2), transparent 32%),
+        radial-gradient(circle at 48% 100%, rgba(228,108,52,0.18), transparent 36%),
+        linear-gradient(155deg, #006D7D, #052D38 54%, #061014);
+      font-family: Inter, Helvetica, Arial, "PingFang SC", "Microsoft YaHei", sans-serif;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background:
+        repeating-linear-gradient(0deg, rgba(255,255,255,0.024) 0 1px, transparent 1px 7px),
+        radial-gradient(circle at 50% 38%, transparent 0 44%, rgba(0,0,0,0.42) 100%);
+      mix-blend-mode: overlay;
+      pointer-events: none;
+      z-index: 3;
+    }
+
+    body::after {
+      content: "";
+      position: fixed;
+      inset: -20%;
+      background-image:
+        linear-gradient(rgba(247,244,234,0.045) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(247,244,234,0.036) 1px, transparent 1px);
+      background-size: 58px 58px;
+      transform: rotate(-4deg);
+      mask-image: radial-gradient(circle at 50% 24%, black, transparent 74%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    #case-canvas {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .fixed-nav {
+      position: fixed;
+      top: 14px;
+      left: 14px;
+      z-index: 90;
+    }
+
+    .fixed-nav a {
+      display: inline-flex;
+      color: var(--paper);
+      text-decoration: none;
+      border: 1px solid rgba(234,224,200,0.28);
+      background: rgba(8,9,7,0.74);
+      backdrop-filter: blur(10px);
+      padding: 8px 12px;
+      font-size: 10px;
+      letter-spacing: 2px;
+      transform: skewX(-9deg);
+    }
+
+    .fixed-nav span { display: inline-block; transform: skewX(9deg); }
+
+    .poster {
+      position: relative;
+      z-index: 2;
+      width: min(100%, 560px);
+      margin: 0 auto;
+      min-height: 100vh;
+      background:
+        linear-gradient(90deg, rgba(234,224,200,0.055), transparent 18%, transparent 80%, rgba(184,100,53,0.08)),
+        rgba(0, 58, 70, 0.55);
+      border-left: 1px solid rgba(247,244,234,0.18);
+      border-right: 1px solid rgba(247,244,234,0.12);
+      box-shadow: 0 0 80px var(--shadow);
+      overflow: hidden;
+    }
+
+    .poster-header {
+      position: relative;
+      min-height: 600px;
+      padding: 78px 24px 26px;
+      overflow: hidden;
+      border-bottom: 1px solid rgba(234,224,200,0.12);
+    }
+
+    .poster-header::before {
+      content: "";
+      position: absolute;
+      left: -20%;
+      top: 24%;
+      width: 140%;
+      height: 300px;
+      background: linear-gradient(100deg, transparent, rgba(247,244,234,0.2), transparent);
+      filter: blur(26px);
+      transform: rotate(-10deg);
+      animation: fogSlide 10s ease-in-out infinite;
+      pointer-events: none;
+    }
+
+    .poster-header::after {
+      content: "MONSTER / SPEED / FIELD";
+      position: absolute;
+      right: 16px;
+      bottom: 22px;
+      color: rgba(234,224,200,0.08);
+      font-size: 38px;
+      line-height: 0.95;
+      font-weight: 900;
+      writing-mode: vertical-rl;
+      letter-spacing: 1px;
+      pointer-events: none;
+    }
+
+    .header-grid {
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(234,224,200,0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(247,244,234,0.045) 1px, transparent 1px);
+      background-size: 48px 48px;
+      mask-image: linear-gradient(to bottom, black, transparent 78%);
+      opacity: 0.64;
+    }
+
+    .bg-stroke {
+      position: absolute;
+      right: -18px;
+      top: 48px;
+      color: transparent;
+      -webkit-text-stroke: 1px rgba(247,244,234,0.16);
+      font-size: clamp(170px, 44vw, 276px);
+      line-height: 0.75;
+      font-weight: 900;
+      letter-spacing: -10px;
+      pointer-events: none;
+    }
+
+    .header-inner { position: relative; z-index: 2; }
+
+    .eyebrow,
+    .overlay-eyebrow {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--moss);
+      font-size: 10px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      margin-bottom: 18px;
+      flex: 1;
+      min-width: 0;
+    }
+    .eyebrow-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 18px;
+      position: relative;
+      z-index: 2;
+    }
+    .nav-pill {
+      display: inline-flex;
+      align-items: center;
+      color: var(--paper);
+      text-decoration: none;
+      border: 1px solid rgba(234,224,200,0.28);
+      background: rgba(8,9,7,0.74);
+      backdrop-filter: blur(10px);
+      padding: 8px 13px;
+      font-size: 10px;
+      letter-spacing: 1.5px;
+      white-space: nowrap;
+      transform: skewX(-9deg);
+      transition: transform 0.2s ease, background 0.2s ease;
+    }
+    .nav-pill:hover {
+      transform: skewX(-9deg) translateY(-2px);
+      background: rgba(8,9,7,0.9);
+    }
+    .nav-pill span {
+      display: inline-block;
+      transform: skewX(9deg);
+    }
+
+    .seal-dot {
+      width: 34px;
+      height: 1px;
+      background: var(--moss);
+      box-shadow: 0 0 16px rgba(122,141,74,0.34);
+      flex: 0 0 auto;
+    }
+
+    .header-title {
+      font-size: clamp(56px, 15vw, 96px);
+      line-height: 0.82;
+      font-weight: 950;
+      letter-spacing: -4px;
+      margin-bottom: 18px;
+      color: #F7F4EA;
+      text-shadow: 0 10px 34px rgba(0,0,0,0.38);
+      transform: skewX(-7deg);
+      animation: titleKick 2.2s ease-in-out infinite;
+    }
+
+    .header-title .paper { color: #F7F4EA; }
+    .header-title .burn { color: #F7F4EA; position: relative; display: inline-block; }
+    .header-title .burn::before, .header-title .burn::after { content: attr(data-text); position: absolute; inset: 0; color: #F7F4EA; overflow: hidden; pointer-events:none; }
+    .header-title .burn::before { clip-path: inset(0 0 55% 0); transform: translateX(-9px); opacity:.42; animation: glitchA 1.8s steps(2,end) infinite; }
+    .header-title .burn::after { clip-path: inset(52% 0 0 0); transform: translateX(10px); opacity:.35; animation: glitchB 2.1s steps(2,end) infinite; }
+
+    .header-copy {
+      max-width: 430px;
+      color: #DDD1B6;
+      font-size: 14px;
+      line-height: 1.85;
+      letter-spacing: 1px;
+      padding-left: 14px;
+      border-left: 2px solid var(--clay);
+      background: linear-gradient(90deg, rgba(234,224,200,0.06), transparent);
+      margin-bottom: 20px;
+    }
+
+    .case-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 22px;
+    }
+
+    .case-tags span {
+      color: var(--paper);
+      border: 1px solid rgba(234,224,200,0.16);
+      background: rgba(234,224,200,0.055);
+      padding: 7px 10px;
+      font-size: 10px;
+      letter-spacing: 2px;
+      transform: skewX(-8deg);
+    }
+
+    .case-tags span:nth-child(2n) { color: var(--moss); }
+    .case-tags span:nth-child(3n) { color: var(--clay); }
+
+    .stat-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 9px;
+      margin-bottom: 18px;
+    }
+
+    .stat-item {
+      min-height: 92px;
+      padding: 13px 12px;
+      border: 1px solid rgba(234,224,200,0.15);
+      background:
+        radial-gradient(circle at 100% 0%, rgba(122,141,74,0.16), transparent 45%),
+        rgba(255,255,255,0.032);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .stat-item::after {
+      content: attr(data-no);
+      position: absolute;
+      right: 8px;
+      bottom: 2px;
+      color: rgba(234,224,200,0.055);
+      font-size: 40px;
+      line-height: 1;
+      font-weight: 900;
+    }
+
+    .stat-label { color: var(--muted); font-size: 9px; letter-spacing: 2px; margin-bottom: 9px; }
+    .stat-val { color: var(--paper); font-size: 24px; line-height: 1; font-weight: 900; letter-spacing: 1px; }
+    .stat-sub { color: var(--dim); font-size: 10px; letter-spacing: 1px; line-height: 1.4; margin-top: 8px; }
+
+    .orgs { display: flex; flex-wrap: wrap; gap: 8px; }
+    .org-tag { color: var(--muted); border: 1px solid rgba(234,224,200,0.13); background: rgba(255,255,255,0.025); padding: 7px 10px; font-size: 10px; letter-spacing: 1px; }
+
+    .accent-bar { display: grid; grid-template-columns: 5fr 2fr 3fr 1fr; gap: 3px; height: 5px; background: rgba(255,255,255,0.04); }
+    .accent-bar div:nth-child(1) { background: var(--paper2); }
+    .accent-bar div:nth-child(2) { background: var(--moss); }
+    .accent-bar div:nth-child(3) { background: var(--clay); }
+    .accent-bar div:nth-child(4) { background: var(--rust); }
+
+    #live-countdown {
+      display: none;
+      position: sticky;
+      top: 0;
+      z-index: 60;
+      padding: 14px 18px 12px;
+      background: rgba(8,9,7,0.9);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid rgba(234,224,200,0.14);
+    }
+
+    .lc-header { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 9px; }
+    .lc-label { color: var(--muted); font-size: 10px; letter-spacing: 2px; }
+    .lc-status { color: var(--moss); font-size: 10px; letter-spacing: 2px; }
+    .lc-timer { display: flex; align-items: end; gap: 5px; }
+    .lc-seg { min-width: 58px; }
+    .lc-num { display: block; color: var(--paper); font-size: 54px; font-weight: 900; line-height: 0.86; letter-spacing: -1px; text-shadow: 0 8px 24px rgba(0,0,0,0.42); }
+    .lc-num.urgent { color: var(--clay); }
+    .lc-unit { display: block; color: var(--dim); font-size: 9px; letter-spacing: 2px; margin-top: 5px; }
+    .lc-colon { color: rgba(234,224,200,0.22); font-size: 38px; line-height: 0.95; padding-bottom: 15px; font-weight: 900; }
+    .lc-progress { height: 3px; margin-top: 11px; background: rgba(255,255,255,0.08); overflow: hidden; }
+    .lc-progress-bar { height: 100%; width: 100%; background: linear-gradient(90deg, var(--moss), var(--paper2)); transition: width 1s linear, background 0.4s ease; }
+    .lc-progress-bar.urgent { background: linear-gradient(90deg, var(--clay), var(--rust)); }
+
+    .timeline,
+    .mission-deck { position: relative; z-index: 2; }
+    .day-section.day-locked { display: none; }
+
+    .day-label {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 16px 24px;
+      border-top: 1px solid rgba(234,224,200,0.12);
+      border-bottom: 1px solid rgba(234,224,200,0.12);
+      background: rgba(255,255,255,0.03);
+    }
+
+    .day-label-accent { color: var(--paper); font-size: 22px; line-height: 1; font-weight: 900; letter-spacing: 1px; white-space: nowrap; }
+    .day4 .day-label-accent { color: var(--clay); }
+    .day5 .day-label-accent { color: var(--moss); }
+    .day-date { color: var(--muted); font-size: 11px; letter-spacing: 2px; white-space: nowrap; }
+    .day-label-line { flex: 1; height: 1px; background: linear-gradient(90deg, rgba(234,224,200,0.25), transparent); }
+
+    .day-countdown-banner {
+      padding: 18px 24px;
+      background:
+        linear-gradient(135deg, rgba(234,224,200,0.055), transparent),
+        rgba(255,255,255,0.025);
+      border-bottom: 1px solid rgba(234,224,200,0.1);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .day-countdown-banner::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(120deg, transparent 0%, rgba(234,224,200,0.11) 45%, transparent 70%);
+      transform: translateX(-100%);
+      animation: scan 5s ease-in-out infinite;
+    }
+
+    .dcb-label { color: var(--muted); font-size: 10px; letter-spacing: 2px; margin-bottom: 8px; }
+    .dcb-row { display: flex; align-items: end; justify-content: space-between; gap: 20px; position: relative; z-index: 1; }
+    .dcb-num { color: var(--paper); font-size: 74px; line-height: 0.8; font-weight: 900; letter-spacing: -2px; }
+    .dcb-orange .dcb-num { color: var(--clay); }
+    .dcb-teal .dcb-num { color: var(--moss); }
+    .dcb-unit { color: var(--paper); font-size: 18px; font-weight: 900; margin-left: 5px; }
+    .dcb-sub { color: var(--dim); font-size: 10px; letter-spacing: 2px; line-height: 1.45; text-align: right; }
+
+    .events-wrapper { border-left: 4px solid var(--paper2); background: rgba(7,8,6,0.46); }
+    .ew-orange { border-left-color: var(--clay); }
+    .ew-teal { border-left-color: var(--moss); }
+
+    .event-row {
+      display: grid;
+      grid-template-columns: 82px 1px 1fr 78px;
+      min-height: 88px;
+      border-bottom: 1px solid rgba(234,224,200,0.09);
+      background: rgba(255,255,255,0.018);
+      transition: opacity 0.6s ease, filter 0.6s ease, background 0.2s ease;
+    }
+
+    .event-row:hover { background: rgba(234,224,200,0.045); }
+    .event-row.locked { opacity: 0.12; filter: blur(3px); pointer-events: none; }
+
+    .time-col,
+    .event-col,
+    .tminus-col { display: flex; flex-direction: column; justify-content: center; padding: 14px; }
+    .time-label,
+    .tminus-label,
+    .event-phase { color: var(--dim); font-size: 9px; letter-spacing: 2px; margin-bottom: 5px; }
+    .time-value { font-size: 30px; line-height: 1; font-weight: 900; letter-spacing: -1px; }
+    .event-divider { width: 1px; margin: 14px 0; background: rgba(234,224,200,0.1); }
+    .event-name { color: var(--paper); font-size: 15px; line-height: 1.35; font-weight: 900; letter-spacing: 1px; }
+    .tminus-col { align-items: flex-end; padding-left: 8px; }
+    .tminus-value { color: var(--paper2); font-size: 22px; font-weight: 900; line-height: 1; }
+    .cv-orange { color: var(--clay); }
+    .cv-teal { color: var(--moss); }
+    .tminus-bar { width: 100%; max-width: 46px; height: 2px; margin-top: 8px; background: currentColor; opacity: 0.45; }
+
+    .mission-deck { padding: 30px 24px; border-top: 1px solid rgba(234,224,200,0.12); }
+    .section-head { display: flex; align-items: end; justify-content: space-between; gap: 16px; margin-bottom: 18px; }
+    .kicker { color: var(--moss); font-size: 10px; letter-spacing: 3px; margin-bottom: 7px; }
+    h2 { font-size: 25px; line-height: 1.2; letter-spacing: 1px; }
+    .section-code { color: var(--dim); font-size: 11px; letter-spacing: 2px; white-space: nowrap; }
+
+    .cards { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .mission-card {
+      min-height: 230px;
+      padding: 16px;
+      border: 1px solid rgba(234,224,200,0.14);
+      background:
+        linear-gradient(145deg, rgba(234,224,200,0.07), transparent 48%),
+        rgba(255,255,255,0.026);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .mission-card:nth-child(2n) { background: linear-gradient(145deg, rgba(184,100,53,0.1), transparent 48%), rgba(255,255,255,0.026); }
+    .mission-card:nth-child(3n) { background: linear-gradient(145deg, rgba(122,141,74,0.12), transparent 48%), rgba(255,255,255,0.026); }
+    .mission-card::before { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 3px; background: linear-gradient(90deg, var(--paper2), var(--moss), var(--clay)); }
+    .mission-card::after { content: attr(data-code); position: absolute; right: 10px; bottom: 6px; color: rgba(234,224,200,0.055); font-size: 58px; line-height: 1; font-weight: 900; letter-spacing: -4px; }
+
+    .card-meta { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 14px; position: relative; z-index: 1; }
+    .card-code { color: var(--moss); font-size: 10px; letter-spacing: 2px; }
+    .card-status { color: var(--muted); border: 1px solid rgba(234,224,200,0.16); padding: 4px 7px; font-size: 9px; letter-spacing: 1px; }
+    .card-title { position: relative; z-index: 1; font-size: 20px; line-height: 1.25; font-weight: 900; letter-spacing: 1px; margin-bottom: 12px; }
+    .card-copy,
+    .card-list { position: relative; z-index: 1; color: #DDD1B6; font-size: 12px; line-height: 1.75; letter-spacing: 1px; }
+    .card-list { list-style: none; display: grid; gap: 6px; }
+    .blank { display: inline-block; min-width: 94px; border-bottom: 1px solid rgba(234,224,200,0.34); transform: translateY(-2px); }
+    .code-blanks { display: flex; gap: 8px; margin: 14px 0; }
+    .code-blanks i { width: 22px; height: 30px; border: 1px solid rgba(234,224,200,0.24); background: rgba(234,224,200,0.06); transform: skewX(-8deg); }
+
+    .schedule-notice { position: relative; z-index: 2; padding: 14px 24px; color: var(--muted); font-size: 11px; line-height: 1.6; letter-spacing: 1px; border-top: 1px solid rgba(234,224,200,0.1); background: rgba(255,255,255,0.02); }
+    .poster-footer { position: relative; z-index: 2; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 18px 24px 24px; color: var(--dim); font-size: 10px; letter-spacing: 2px; border-top: 1px solid rgba(234,224,200,0.1); }
+    .footer-line { flex: 1; height: 1px; background: linear-gradient(90deg, var(--moss), transparent, var(--clay)); opacity: 0.56; }
+    .footer-inv-link { color: var(--paper); text-decoration: none; white-space: nowrap; }
+
+
+
+    .beat-bars {
+      height: 42px;
+      display: flex;
+      align-items: end;
+      gap: 6px;
+      margin: 16px 0 22px;
+    }
+    .beat-bars i {
+      width: 9px;
+      height: 12px;
+      background: #F7F4EA;
+      border-radius: 999px;
+      animation: beat .86s ease-in-out infinite;
+      opacity: .85;
+    }
+    .beat-bars i:nth-child(2) { animation-delay: .08s; }
+    .beat-bars i:nth-child(3) { animation-delay: .16s; }
+    .beat-bars i:nth-child(4) { animation-delay: .24s; }
+    .beat-bars i:nth-child(5) { animation-delay: .32s; background:#E46C34; }
+    .beat-bars i:nth-child(6) { animation-delay: .4s; }
+    .beat-bars i:nth-child(7) { animation-delay: .48s; }
+    .beat-bars i:nth-child(8) { animation-delay: .56s; }
+
+    .mission-card { cursor: pointer; transform-style: preserve-3d; transition: transform .45s ease, background .22s ease; }
+    .mission-card.is-flipped { transform: rotateY(180deg) scale(.98); }
+    .mission-card.is-flipped .card-title,
+    .mission-card.is-flipped .card-copy,
+    .mission-card.is-flipped .card-list,
+    .mission-card.is-flipped .code-blanks { opacity: .24; }
+    .mission-card.is-flipped::after { content: "OPEN"; color: rgba(247,244,234,.18); transform: rotateY(180deg); }
+    .event-row.is-active { background: rgba(247,244,234,0.14); }
+    .pace-ripple { position: fixed; width: 16px; height: 16px; border: 1px solid rgba(247,244,234,.8); border-radius:50%; pointer-events:none; transform:translate(-50%,-50%) scale(1); animation: ripple .7s ease-out forwards; z-index:500; }
+
+    #secret-overlay,
+    #launch-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 200;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 26px;
+      background:
+        radial-gradient(circle at 50% 45%, rgba(234,224,200,0.12), transparent 32%),
+        rgba(7,8,6,0.93);
+      overflow: hidden;
+    }
+
+
+    #secret-overlay::before,
+    #launch-overlay::before {
+      content:"";
+      position:absolute;
+      width:520px;
+      height:150px;
+      left:-120px;
+      top:18%;
+      border-radius:999px;
+      background:linear-gradient(90deg, rgba(2,8,10,.82), rgba(228,108,52,.44), rgba(247,244,234,.35));
+      filter:blur(18px);
+      transform:rotate(24deg);
+      animation:bodyBlur 5.2s ease-in-out infinite;
+    }
+    #secret-overlay::after,
+    #launch-overlay::after {
+      content:"";
+      position:absolute;
+      width:470px;
+      height:130px;
+      right:-170px;
+      bottom:18%;
+      border-radius:999px;
+      background:linear-gradient(90deg, rgba(247,244,234,.6), rgba(228,108,52,.34), rgba(2,8,10,.76));
+      filter:blur(16px);
+      transform:rotate(-18deg);
+      animation:bodyBlur 4.8s ease-in-out infinite reverse;
+    }
+
+    .overlay-panel {
+      width: min(100%, 560px);
+      border: 1px solid rgba(234,224,200,0.22);
+      background: rgba(13, 15, 10, 0.82);
+      backdrop-filter: blur(18px);
+      padding: 30px 24px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 0 70px rgba(0,0,0,0.48);
+    }
+
+    .overlay-panel::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(90deg, rgba(247,244,234,0.12), transparent 24%, transparent 76%, rgba(228,108,52,0.14)),
+        linear-gradient(120deg, transparent 0%, rgba(247,244,234,0.12) 46%, transparent 68%);
+      transform: translateX(-100%);
+      animation: scan 4.2s ease-in-out infinite;
+      pointer-events: none;
+    }
+
+    .overlay-content { position: relative; z-index: 1; }
+    .secret-title,
+    .launch-title { font-size: clamp(52px, 15vw, 94px); line-height: 0.84; font-weight: 950; letter-spacing: -4px; margin-bottom: 14px; color:#F7F4EA; transform: skewX(-7deg); text-shadow: 0 10px 32px rgba(0,0,0,.34); animation:titleKick 2.2s ease-in-out infinite; }
+    .secret-title span,
+    .launch-title span { color: #F7F4EA; position:relative; display:inline-block; }
+    .secret-title span::before, .launch-title span::before { content: attr(data-text); position:absolute; inset:0; transform:translateX(-10px); clip-path: inset(0 0 55% 0); opacity:.42; }
+    .secret-sub,
+    .launch-sub { color: var(--muted); font-size: 12px; line-height: 1.8; letter-spacing: 2px; margin-bottom: 22px; }
+    .secret-countdown { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin: 22px 0; }
+    .sc-block { border: 1px solid rgba(234,224,200,0.13); background: rgba(255,255,255,0.035); padding: 12px 8px 10px; text-align: center; }
+    .sc-num { display: block; color: var(--paper); font-size: clamp(34px, 10vw, 56px); line-height: 0.9; font-weight: 900; letter-spacing: -1px; }
+    .sc-label { display: block; color: var(--dim); font-size: 9px; letter-spacing: 2px; margin-top: 8px; }
+    .secret-unlock-info,
+    .launch-hint { color: var(--moss); font-size: 10px; letter-spacing: 2px; }
+
+    #launch-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      color: #100E0A;
+      background: var(--paper);
+      border: 1px solid var(--paper);
+      padding: 15px 20px;
+      min-height: 50px;
+      font-size: 15px;
+      font-weight: 900;
+      letter-spacing: 2px;
+      cursor: pointer;
+      transform: skewX(-10deg);
+      box-shadow: 0 18px 44px rgba(0,0,0,0.34);
+      margin: 6px 0 18px;
+    }
+
+    #launch-btn span { display: inline-block; transform: skewX(10deg); }
+
+    #unlock-toast {
+      display: none;
+      position: fixed;
+      left: 50%;
+      top: 18px;
+      transform: translateX(-50%);
+      z-index: 500;
+      color: #100E0A;
+      background: var(--paper);
+      border: 1px solid var(--paper);
+      padding: 10px 18px;
+      font-size: 12px;
+      font-weight: 900;
+      letter-spacing: 2px;
+      white-space: nowrap;
+      box-shadow: 0 18px 44px rgba(0,0,0,0.34);
+    }
+
+    #admin-btn { position: fixed; right: 12px; bottom: 12px; z-index: 250; color: rgba(234,224,200,0.18); background: none; border: 0; font-size: 9px; letter-spacing: 2px; cursor: pointer; padding: 8px; }
+
+    @keyframes bodyBlur { 0%,100% { transform: translateX(-2%) rotate(24deg) scale(1); } 50% { transform: translateX(4%) rotate(20deg) scale(1.05); } }
+    @keyframes beat { 0%,100% { height: 10px; transform: translateY(0); } 50% { height: 38px; transform: translateY(-3px); } }
+    @keyframes titleKick { 0%,100% { transform: skewX(-7deg) scale(1); } 50% { transform: skewX(-7deg) scale(1.018); } }
+    @keyframes glitchA { 0%,80%,100% { transform: translateX(-7px); } 82% { transform: translateX(-18px); } 86% { transform: translateX(3px); } }
+    @keyframes glitchB { 0%,76%,100% { transform: translateX(8px); } 78% { transform: translateX(20px); } 84% { transform: translateX(-5px); } }
+    @keyframes ripple { to { opacity:0; transform:translate(-50%,-50%) scale(9); } }
+
+    @keyframes fogSlide { 0%,100% { transform: translateX(-8%) rotate(-10deg); opacity: 0.42; } 50% { transform: translateX(8%) rotate(-10deg); opacity: 0.84; } }
+    @keyframes scan { 0%,35% { transform: translateX(-100%); } 70%,100% { transform: translateX(100%); } }
+    @keyframes unlockFlash { 0% { background: rgba(122,141,74,0.18); } 100% { background: rgba(255,255,255,0.018); } }
+    @keyframes toastIn { from { opacity: 0; transform: translateX(-50%) translateY(-10px); } to { opacity: 1; transform: translateX(-50%) translateY(0); } }
+    @keyframes toastOut { from { opacity: 1; } to { opacity: 0; } }
+    .event-row.unlocking { animation: unlockFlash 1.2s ease forwards; }
+
+    @media (max-width: 600px) {
+      .poster { width: 100%; border: 0; }
+      .fixed-nav { top: 10px; left: 10px; }
+      .poster-header { padding: 72px 18px 24px; min-height: 540px; }
+      .stat-grid { grid-template-columns: 1fr; }
+      .day-label, .day-countdown-banner, .mission-deck, .schedule-notice, .poster-footer { padding-left: 18px; padding-right: 18px; }
+      .event-row { grid-template-columns: 72px 1px 1fr; }
+      .tminus-col { grid-column: 3; align-items: flex-start; padding-top: 0; }
+      .cards { grid-template-columns: 1fr; }
+      .section-head { display: block; }
+      .section-code { display: block; margin-top: 8px; }
+      .secret-countdown { gap: 5px; }
+      .sc-block { padding-left: 4px; padding-right: 4px; }
+  
+    #secret-overlay::before,
+    #launch-overlay::before {
+      content:"";
+      position:absolute;
+      width:520px;
+      height:150px;
+      left:-120px;
+      top:18%;
+      border-radius:999px;
+      background:linear-gradient(90deg, rgba(2,8,10,.82), rgba(228,108,52,.44), rgba(247,244,234,.35));
+      filter:blur(18px);
+      transform:rotate(24deg);
+      animation:bodyBlur 5.2s ease-in-out infinite;
+    }
+    #secret-overlay::after,
+    #launch-overlay::after {
+      content:"";
+      position:absolute;
+      width:470px;
+      height:130px;
+      right:-170px;
+      bottom:18%;
+      border-radius:999px;
+      background:linear-gradient(90deg, rgba(247,244,234,.6), rgba(228,108,52,.34), rgba(2,8,10,.76));
+      filter:blur(16px);
+      transform:rotate(-18deg);
+      animation:bodyBlur 4.8s ease-in-out infinite reverse;
+    }
+
+    .overlay-panel { padding: 26px 18px; }
+    }
+
+    .mission-trigger { display:flex; justify-content:center; padding:16px 14px; border-bottom:1px solid rgba(234,224,200,0.09); }
+    .mission-btn { display:inline-flex; align-items:center; gap:10px; color:#100E0A; background:var(--paper); border:1px solid var(--paper); padding:14px 22px; font-size:14px; font-weight:900; letter-spacing:2px; cursor:pointer; transform:skewX(-10deg); box-shadow:0 14px 36px rgba(0,0,0,0.3); transition:transform 0.2s ease, box-shadow 0.2s ease; }
+    .mission-btn:hover { transform:skewX(-10deg) translateY(-2px); box-shadow:0 18px 44px rgba(0,0,0,0.38); }
+    .mission-btn span { display:inline-block; transform:skewX(10deg); }
+    #password-overlay { display:none; position:fixed; inset:0; z-index:200; align-items:center; justify-content:center; padding:26px; background:radial-gradient(circle at 50% 45%, rgba(234,224,200,0.12), transparent 32%), rgba(7,8,6,0.93); }
+    .pw-title { font-size:clamp(32px,10vw,48px); line-height:0.9; font-weight:950; letter-spacing:-2px; color:var(--paper); margin-bottom:10px; transform:skewX(-7deg); }
+    .pw-hint { color:var(--muted); font-size:12px; line-height:1.8; letter-spacing:1px; margin-bottom:22px; }
+    .pw-input { width:100%; background:rgba(234,224,200,0.06); border:1px solid rgba(234,224,200,0.22); color:var(--paper); font-size:16px; font-weight:700; letter-spacing:4px; padding:14px 16px; margin-bottom:16px; text-align:center; outline:none; transition:border-color 0.2s ease; box-sizing:border-box; }
+    .pw-input:focus { border-color:var(--moss); }
+    .pw-input::placeholder { color:var(--dim); letter-spacing:2px; font-weight:400; }
+    .pw-submit { display:inline-flex; align-items:center; gap:10px; width:100%; justify-content:center; color:#100E0A; background:var(--paper); border:1px solid var(--paper); padding:14px 20px; font-size:14px; font-weight:900; letter-spacing:2px; cursor:pointer; transform:skewX(-10deg); box-shadow:0 14px 36px rgba(0,0,0,0.3); transition:transform 0.2s ease; }
+    .pw-submit:hover { transform:skewX(-10deg) translateY(-2px); }
+    .pw-submit span { display:inline-block; transform:skewX(10deg); }
+    .pw-error { display:none; color:var(--clay); font-size:11px; letter-spacing:2px; text-align:center; margin-top:12px; }
+
+    @media (prefers-reduced-motion: reduce) {
+      .poster-header::before, .day-countdown-banner::after, .overlay-panel::before { animation: none; }
+      * { scroll-behavior: auto; }
+    }
+  </style>
+</head>
+<body>
+  <canvas id="case-canvas" aria-hidden="true"></canvas>
+  <div id="unlock-toast"></div>
+
+  <div class="fixed-nav"><a href="invitation.html"><span>← 返回 Break Point</span></a></div>
+
+  <main class="poster" id="poster">
+    <div id="secret-overlay">
+      <div class="overlay-panel">
+        <div class="overlay-content">
+          <div class="overlay-eyebrow"><span class="seal-dot"></span>SEALED FIELD FILE</div>
+          <div class="secret-title">Monster<br><span data-text="Speed">Speed</span><br>Locked</div>
+          <div class="secret-sub">RUN CLUB / MOGANSHAN / FIELD CASE<br>北京时间 2026年7月3日 14:00 开启 48小时倒计时城市落跑计划</div>
+          <div class="secret-countdown">
+            <div class="sc-block"><span class="sc-num" id="sc-days">--</span><span class="sc-label">DAYS</span></div>
+            <div class="sc-block"><span class="sc-num" id="sc-hours">--</span><span class="sc-label">HRS</span></div>
+            <div class="sc-block"><span class="sc-num" id="sc-mins">--</span><span class="sc-label">MIN</span></div>
+            <div class="sc-block"><span class="sc-num" id="sc-secs">--</span><span class="sc-label">SEC</span></div>
+          </div>
+          <div class="secret-unlock-info">ENGINEERED FOR FLOW · THERE IS NO FINISH LINE</div><div class="beat-bars"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+        </div>
+      </div>
+    </div>
+
+    <div id="launch-overlay">
+      <div class="overlay-panel">
+        <div class="overlay-content">
+          <div class="overlay-eyebrow"><span class="seal-dot"></span>MONSTER SPEED READY · 任务已送达</div>
+          <div class="launch-title"><span data-text="48H">48H</span><br>Monster<br>Speed</div>
+          <div class="launch-sub">按下启动后，倒计时、行程和线索卡开始跟着节拍推进。</div>
+          <button id="launch-btn" onclick="startCountdown()"><span>START THE RUN ↗</span></button>
+          <div class="launch-hint">MOGANSHAN · FOG RUN · LOST ROUTE · CASE FILE</div>
+        </div>
+      </div>
+    </div>
+
+    <div id="live-countdown">
+      <div class="lc-header"><div class="lc-label">T-MINUS · RUN TIMER</div><div class="lc-status">● LIVE PACE</div></div>
+      <div class="lc-timer">
+        <div class="lc-seg"><span class="lc-num" id="lc-h">48</span><span class="lc-unit">HRS</span></div>
+        <div class="lc-colon">:</div>
+        <div class="lc-seg"><span class="lc-num" id="lc-m">00</span><span class="lc-unit">MIN</span></div>
+        <div class="lc-colon">:</div>
+        <div class="lc-seg"><span class="lc-num" id="lc-s">00</span><span class="lc-unit">SEC</span></div>
+      </div>
+      <div class="lc-progress"><div class="lc-progress-bar" id="lc-bar"></div></div>
+    </div>
+
+    <header class="poster-header">
+      <div class="header-grid"></div>
+      <div class="bg-stroke">48</div>
+      <div class="header-inner">
+        <div class="eyebrow-row"><div class="eyebrow"><span class="seal-dot"></span>MOGANSHAN RUN CLUB / FIELD CASE</div><a class="nav-pill" href="launch.html"><span>查看任务 →</span></a></div>
+        <h1 class="header-title"><span class="paper">Monster</span><br><span class="burn" data-text="Speed">Speed</span><br>48H</h1>
+        <p class="header-copy">这不是普通日程，是一支可互动的山野运动片。倒计时、任务卡、追光跑和线索路线一起进入节拍。</p>
+        <div class="case-tags"><span>BREAK POINT</span><span>MISSION CARD</span><span>TRAIL SPEED</span><span>NO FINISH LINE</span></div><div class="beat-bars"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+        <div class="stat-grid">
+          <div class="stat-item" data-no="01"><div class="stat-label">DATE</div><div class="stat-val">JUL 03-05</div><div class="stat-sub">2026</div></div>
+          <div class="stat-item" data-no="02"><div class="stat-label">TIME LIMIT</div><div class="stat-val">48 HRS</div><div class="stat-sub">逐段解锁</div></div>
+          <div class="stat-item" data-no="03"><div class="stat-label">GENRE</div><div class="stat-val">CASE</div><div class="stat-sub">RUN + CASE</div></div>
+        </div>
+        <div class="orgs"><div class="org-tag">莫干山户外运动协会</div><div class="org-tag">山野梦想家</div><div class="org-tag">DEEPBEAT 记路家</div></div>
+      </div>
+    </header>
+
+    <div class="accent-bar"><div></div><div></div><div></div><div></div></div>
+
+    <section class="timeline">
+      <div class="day-section day-locked" data-day="1">
+        <div class="day-label day3"><span class="day-label-accent">DAY 01</span><span class="day-date">7月3日 · 抵达 / 解码 / 集结</span><div class="day-label-line"></div></div>
+        <div class="day-countdown-banner dcb-lime"><div class="dcb-label">距离冲线</div><div class="dcb-row"><div><span class="dcb-num">48</span><span class="dcb-unit">小时</span></div><div class="dcb-sub">RUN OPENS<br>T-MINUS 48:00</div></div></div>
+        <div class="events-wrapper ew-lime">
+          <div class="event-row locked" data-tminus="48" data-day="1"><div class="time-col"><div class="time-label">TIME</div><div class="time-value">14:00</div></div><div class="event-divider"></div><div class="event-col"><div class="event-phase">ARRIVAL / 抵达</div><div class="event-name">入住酒店<br>探路者大礼包</div></div><div class="tminus-col"><div class="tminus-label">T-MINUS</div><div class="tminus-value">48:00</div><div class="tminus-bar"></div></div></div>
+
+          <div class="event-row locked" data-tminus="47" data-day="1"><div class="time-col"><div class="time-label">TIME</div><div class="time-value">15:00</div></div><div class="event-divider"></div><div class="event-col"><div class="event-phase">MISSION / 解密</div><div class="event-name">任务卡解密<br>寻找莫干山传承人</div></div><div class="tminus-col"><div class="tminus-label">T-MINUS</div><div class="tminus-value">47:00</div><div class="tminus-bar"></div></div></div>
+          <div class="event-row locked" data-tminus="44" data-day="1"><div class="time-col"><div class="time-label">TIME</div><div class="time-value">18:00</div></div><div class="event-divider"></div><div class="event-col"><div class="event-phase">WELCOME / 欢迎</div><div class="event-name">欢迎晚宴</div></div><div class="tminus-col"><div class="tminus-label">T-MINUS</div><div class="tminus-value">44:00</div><div class="tminus-bar"></div></div></div>
+          <div class="event-row locked" data-tminus="41" data-day="1"><div class="time-col"><div class="time-label">TIME</div><div class="time-value">21:00</div></div><div class="event-divider"></div><div class="event-col"><div class="event-phase">REST / 晚安</div><div class="event-name">晚安礼</div></div><div class="tminus-col"><div class="tminus-label">T-MINUS</div><div class="tminus-value">41:00</div><div class="tminus-bar"></div></div></div>
+        </div>
+      </div>
+
+      <div class="day-section day-locked" data-day="2">
+        <div class="day-label day4"><span class="day-label-accent">DAY 02</span><span class="day-date">7月4日 · 训练 / 追光跑 / 复盘</span><div class="day-label-line"></div></div>
+        <div class="day-countdown-banner dcb-orange"><div class="dcb-label">距离冲线</div><div class="dcb-row"><div><span class="dcb-num">29</span><span class="dcb-unit">小时</span></div><div class="dcb-sub">CHASE DAY<br>T-MINUS 29:00</div></div></div>
+        <div class="events-wrapper ew-orange">
+          <div class="event-row locked" data-tminus="29" data-day="2"><div class="time-col"><div class="time-label">TIME</div><div class="time-value">09:00</div></div><div class="event-divider"></div><div class="event-col"><div class="event-phase">TRAINING / 主题沙龙</div><div class="event-name">山野视觉教学课程</div></div><div class="tminus-col"><div class="tminus-label">T-MINUS</div><div class="tminus-value cv-orange">29:00</div><div class="tminus-bar"></div></div></div>
+          <div class="event-row locked" data-tminus="25" data-day="2"><div class="time-col"><div class="time-label">TIME</div><div class="time-value">13:00</div></div><div class="event-divider"></div><div class="event-col"><div class="event-phase">HYPOXIA / 训练</div><div class="event-name">被动训练<br>高低氧循环</div></div><div class="tminus-col"><div class="tminus-label">T-MINUS</div><div class="tminus-value cv-orange">25:00</div><div class="tminus-bar"></div></div></div>
+          <div class="event-row locked" data-tminus="22" data-day="2"><div class="time-col"><div class="time-label">TIME</div><div class="time-value">16:00</div></div><div class="event-divider"></div><div class="event-col"><div class="event-phase">RACE / 赛事</div><div class="event-name">落日追光跑</div></div><div class="tminus-col"><div class="tminus-label">T-MINUS</div><div class="tminus-value cv-orange">22:00</div><div class="tminus-bar"></div></div></div>
+          <div class="event-row locked" data-tminus="20" data-day="2"><div class="time-col"><div class="time-label">TIME</div><div class="time-value">18:00</div></div><div class="event-divider"></div><div class="event-col"><div class="event-phase">CEREMONY / 晚宴</div><div class="event-name">篝火晚会 · 晚宴<br>分享会</div></div><div class="tminus-col"><div class="tminus-label">T-MINUS</div><div class="tminus-value cv-orange">20:00</div><div class="tminus-bar"></div></div></div>
+          <div class="event-row locked" data-tminus="17" data-day="2"><div class="time-col"><div class="time-label">TIME</div><div class="time-value">21:00</div></div><div class="event-divider"></div><div class="event-col"><div class="event-phase">CERT / 认证</div><div class="event-name">路线考核<br>及认证颁发</div></div><div class="tminus-col"><div class="tminus-label">T-MINUS</div><div class="tminus-value cv-orange">17:00</div><div class="tminus-bar"></div></div></div>
+          <div class="event-row locked" data-tminus="16" data-day="2"><div class="time-col"><div class="time-label">TIME</div><div class="time-value">22:00</div></div><div class="event-divider"></div><div class="event-col"><div class="event-phase">REST / 晚安</div><div class="event-name">晚安礼</div></div><div class="tminus-col"><div class="tminus-label">T-MINUS</div><div class="tminus-value cv-orange">16:00</div><div class="tminus-bar"></div></div></div>
+        </div>
+      </div>
+
+      <div class="day-section day-locked" data-day="3">
+        <div class="day-label day5"><span class="day-label-accent">DAY 03</span><span class="day-date">7月5日 · 路线试跑 / 收束 / 回程</span><div class="day-label-line"></div></div>
+        <div class="day-countdown-banner dcb-teal"><div class="dcb-label">距离冲线</div><div class="dcb-row"><div><span class="dcb-num">05</span><span class="dcb-unit">小时</span></div><div class="dcb-sub">FINAL ROUTE<br>T-MINUS 05:00</div></div></div>
+        <div class="events-wrapper ew-teal">
+          <div class="event-row locked" data-tminus="4" data-day="3"><div class="time-col"><div class="time-label">TIME</div><div class="time-value">10:00</div></div><div class="event-divider"></div><div class="event-col"><div class="event-phase">TRIAL / 试跑</div><div class="event-name">设计路线试跑</div></div><div class="tminus-col"><div class="tminus-label">T-MINUS</div><div class="tminus-value cv-teal">04:00</div><div class="tminus-bar"></div></div></div>
+          <div class="event-row locked" data-tminus="2" data-day="3"><div class="time-col"><div class="time-label">TIME</div><div class="time-value">12:00</div></div><div class="event-divider"></div><div class="event-col"><div class="event-phase">AWARD / 颁奖</div><div class="event-name">证书颁发<br>认证总结会</div></div><div class="tminus-col"><div class="tminus-label">T-MINUS</div><div class="tminus-value cv-teal">02:00</div><div class="tminus-bar"></div></div></div>
+          <div class="event-row locked" data-tminus="0" data-day="3"><div class="time-col"><div class="time-label">TIME</div><div class="time-value">14:00</div></div><div class="event-divider"></div><div class="event-col"><div class="event-phase">COMPLETE / 结束</div><div class="event-name">倒计时结束<br>各自回程</div></div><div class="tminus-col"><div class="tminus-label">T-MINUS</div><div class="tminus-value cv-teal">00:00</div><div class="tminus-bar"></div></div></div>
+        </div>
+      </div>
+    </section>
+
+
+
+    <div class="schedule-notice">主办方会根据场地时间等因素适当调整当日行程。线索卡内容可根据现场剧情继续替换。</div>
+    <footer class="poster-footer"><span>MOGANSHAN 48H</span><span class="footer-line"></span><a class="footer-inv-link" href="invitation.html">Break Point ←</a><span>RUN · SPEED · CASE</span></footer>
+
+
+  </main>
+
+  <button id="admin-btn" onclick="adminUnlock()">ADMIN</button>
+
+  <script>
+    function now() {
+      const sim = localStorage.getItem('48h_sim_time');
+      return sim ? new Date(sim).getTime() : Date.now();
+    }
+
+    const ANCHOR = new Date('2026-07-03T06:00:00Z');
+    const TOTAL_MS = 48 * 60 * 60 * 1000;
+    const DAY_UNLOCK_UTC = {
+      1: new Date('2026-07-03T06:00:00Z').getTime(),
+      2: new Date('2026-07-03T16:00:00Z').getTime(),
+      3: new Date('2026-07-04T16:00:00Z').getTime(),
+    };
+
+    const secretOverlay = document.getElementById('secret-overlay');
+    const launchOverlay = document.getElementById('launch-overlay');
+    const liveCountdown = document.getElementById('live-countdown');
+    const toast = document.getElementById('unlock-toast');
+    let adminMode = false;
+    let toastTimer;
+
+    function pad(n) { return String(n).padStart(2, '0'); }
+
+    function getPhase() {
+      const t = now();
+      if (t < ANCHOR.getTime()) return 'secret';
+      if (!localStorage.getItem('48h_launched')) return 'ready';
+      return 'running';
+    }
+
+    function getUnlockedDayCount() {
+      let count = 1;
+      const t = now();
+      if (t >= DAY_UNLOCK_UTC[2]) count = 2;
+      if (t >= DAY_UNLOCK_UTC[3]) count = 3;
+      return count;
+    }
+
+    function unlockDays(upToDay, animate) {
+      for (let d = 1; d <= upToDay; d++) {
+        const section = document.querySelector(`.day-section[data-day="${d}"]`);
+        if (!section) continue;
+        const wasLocked = section.classList.contains('day-locked');
+        section.classList.remove('day-locked');
+        section.querySelectorAll('.event-row.locked').forEach((row, i) => {
+          row.classList.remove('locked');
+          if (animate && wasLocked) {
+            setTimeout(() => {
+              row.classList.add('unlocking');
+              setTimeout(() => row.classList.remove('unlocking'), 1400);
+            }, i * 160);
+          }
+        });
+        if (animate && wasLocked) {
+          const label = section.querySelector('.day-label-accent');
+          showToast('已解封 ' + (label ? label.textContent.trim() : `DAY 0${d}`));
+        }
+      }
+    }
+
+    function scheduleMidnightCheck() {
+      const currentUnlocked = getUnlockedDayCount();
+      unlockDays(currentUnlocked, false);
+      let nextUnlock = null;
+      const t = now();
+      for (let d = currentUnlocked + 1; d <= 3; d++) {
+        if (DAY_UNLOCK_UTC[d] > t) { nextUnlock = DAY_UNLOCK_UTC[d]; break; }
+      }
+      if (!nextUnlock) return;
+      const delay = Math.min(nextUnlock - t + 500, 60000);
+      setTimeout(() => {
+        const newUnlocked = getUnlockedDayCount();
+        if (newUnlocked > currentUnlocked) unlockDays(newUnlocked, true);
+        scheduleMidnightCheck();
+      }, delay);
+    }
+
+    function showToast(text) {
+      clearTimeout(toastTimer);
+      toast.textContent = '◆ ' + text;
+      toast.style.display = 'block';
+      toast.style.animation = 'toastIn 0.3s ease';
+      toastTimer = setTimeout(() => {
+        toast.style.animation = 'toastOut 0.4s ease forwards';
+        setTimeout(() => { toast.style.display = 'none'; }, 400);
+      }, 2600);
+    }
+
+    function runSecretPhase() {
+      secretOverlay.style.display = 'flex';
+      launchOverlay.style.display = 'none';
+      liveCountdown.style.display = 'none';
+      function tick() {
+        const remaining = ANCHOR.getTime() - now();
+        if (remaining <= 0) {
+          secretOverlay.style.display = 'none';
+          runReadyPhase();
+          return;
+        }
+        const d = Math.floor(remaining / 86400000);
+        const h = Math.floor((remaining % 86400000) / 3600000);
+        const m = Math.floor((remaining % 3600000) / 60000);
+        const s = Math.floor((remaining % 60000) / 1000);
+        document.getElementById('sc-days').textContent = pad(d);
+        document.getElementById('sc-hours').textContent = pad(h);
+        document.getElementById('sc-mins').textContent = pad(m);
+        document.getElementById('sc-secs').textContent = pad(s);
+        setTimeout(tick, 1000);
+      }
+      tick();
+    }
+
+    function runReadyPhase() {
+      secretOverlay.style.display = 'none';
+      launchOverlay.style.display = 'flex';
+      liveCountdown.style.display = 'none';
+    }
+
+    function startCountdown() {
+      localStorage.setItem('48h_launched', '1');
+      window.location.href = 'launch.html';
+    }
+
+    function runRunningPhase() {
+      secretOverlay.style.display = 'none';
+      launchOverlay.style.display = 'none';
+      liveCountdown.style.display = 'block';
+      const daysToUnlock = adminMode ? 3 : getUnlockedDayCount();
+      unlockDays(daysToUnlock, false);
+      if (!adminMode) scheduleMidnightCheck();
+      function tick() {
+        const elapsed = now() - ANCHOR.getTime();
+        const remaining = TOTAL_MS - elapsed;
+        if (remaining <= 0) {
+          document.getElementById('lc-h').textContent = '00';
+          document.getElementById('lc-m').textContent = '00';
+          document.getElementById('lc-s').textContent = '00';
+          document.getElementById('lc-bar').style.width = '0%';
+          unlockDays(3, false);
+          return;
+        }
+        const totalSec = Math.ceil(remaining / 1000);
+        const hh = Math.floor(totalSec / 3600);
+        const mm = Math.floor((totalSec % 3600) / 60);
+        const ss = totalSec % 60;
+        const hEl = document.getElementById('lc-h');
+        const mEl = document.getElementById('lc-m');
+        const sEl = document.getElementById('lc-s');
+        const bar = document.getElementById('lc-bar');
+        const urgent = hh < 6;
+        hEl.textContent = pad(hh);
+        mEl.textContent = pad(mm);
+        sEl.textContent = pad(ss);
+        hEl.classList.toggle('urgent', urgent);
+        mEl.classList.toggle('urgent', urgent);
+        sEl.classList.toggle('urgent', urgent);
+        bar.classList.toggle('urgent', urgent);
+        bar.style.width = ((remaining / TOTAL_MS) * 100).toFixed(2) + '%';
+        setTimeout(tick, 1000);
+      }
+      tick();
+    }
+
+
+
+    function adminUnlock() {
+      const pwd = (prompt('管理员密码') || '').trim();
+      if (pwd === '12345') {
+        window.location.href = 'launch.html';
+        return;
+      }
+      if (pwd !== '20260703') {
+        if (pwd !== '') alert('密码错误');
+        return;
+      }
+      adminMode = true;
+      localStorage.setItem('48h_launched', '1');
+      runRunningPhase();
+    }
+
+    (function bootCaseCanvas() {
+      const canvas = document.getElementById('case-canvas');
+      const ctx = canvas.getContext('2d');
+      const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      let width = 0, height = 0, dpr = 1;
+      const motes = Array.from({ length: 88 }, () => ({ x: Math.random(), y: Math.random(), r: 0.4 + Math.random() * 1.6, speed: 0.16 + Math.random() * 0.55, drift: -0.3 + Math.random() * 0.6 }));
+      function resize() {
+        dpr = Math.min(window.devicePixelRatio || 1, 2);
+        width = window.innerWidth; height = window.innerHeight;
+        canvas.width = Math.floor(width * dpr); canvas.height = Math.floor(height * dpr);
+        canvas.style.width = width + 'px'; canvas.style.height = height + 'px';
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      }
+      function line(x1,y1,x2,y2,color,alpha,w){ ctx.globalAlpha=alpha; ctx.strokeStyle=color; ctx.lineWidth=w; ctx.beginPath(); ctx.moveTo(x1,y1); ctx.lineTo(x2,y2); ctx.stroke(); }
+      function contours(t){ ctx.globalCompositeOperation='lighter'; for(let j=0;j<7;j++){ const baseY=height*(0.16+j*0.105); ctx.beginPath(); for(let x=-20;x<=width+20;x+=18){ const y=baseY+Math.sin(x*0.018+j*1.7+t*0.00025)*(14+j*2); if(x===-20) ctx.moveTo(x,y); else ctx.lineTo(x,y); } ctx.globalAlpha=0.042+j*0.006; ctx.strokeStyle=j%2?'#F7F4EA':'#0097A8'; ctx.lineWidth=1; ctx.stroke(); } }
+      function trail(t){ const cx=width*0.5, horizon=height*0.52; for(let i=-4;i<=4;i++) line(cx,horizon,cx+i*width*0.11,height+40,'#F7F4EA',0.055+Math.abs(i)*0.01,1); for(let i=0;i<16;i++){ const p=((i/16)+t*0.00023)%1; const y=horizon+Math.pow(p,2.05)*(height-horizon+100); const span=36+Math.pow(p,2)*width*0.95; line(cx-span*0.5,y,cx+span*0.5,y,i%3===0?'#E46C34':'#0097A8',0.05+p*0.2,1.1); } }
+      function dust(t){ ctx.globalCompositeOperation='lighter'; motes.forEach(m=>{ m.y+=m.speed*0.0018; m.x+=Math.sin(t*0.0007+m.speed*12)*0.0007+m.drift*0.00025; if(m.y>1.08){m.y=-0.06;m.x=Math.random();} if(m.x<-0.05)m.x=1.05; if(m.x>1.05)m.x=-0.05; ctx.globalAlpha=0.16+m.speed*0.16; ctx.fillStyle='#F7F4EA'; ctx.beginPath(); ctx.arc(m.x*width,m.y*height,m.r,0,Math.PI*2); ctx.fill(); }); }
+      function frame(t){ ctx.clearRect(0,0,width,height); contours(t); trail(t); dust(t); ctx.globalAlpha=1; ctx.globalCompositeOperation='source-over'; if(!reduced) requestAnimationFrame(frame); }
+      resize(); window.addEventListener('resize', resize); requestAnimationFrame(frame);
+    })();
+
+
+    (function bootInteractions(){
+      document.querySelectorAll('.mission-card').forEach(card => {
+        card.addEventListener('click', () => card.classList.toggle('is-flipped'));
+      });
+      document.querySelectorAll('.event-row').forEach(row => {
+        row.addEventListener('click', () => {
+          document.querySelectorAll('.event-row.is-active').forEach(x => x.classList.remove('is-active'));
+          row.classList.add('is-active');
+        });
+      });
+      addEventListener('click', e => {
+        const r = document.createElement('span');
+        r.className = 'pace-ripple';
+        r.style.left = e.clientX + 'px';
+        r.style.top = e.clientY + 'px';
+        document.body.appendChild(r);
+        setTimeout(() => r.remove(), 760);
+      });
+    })();
+
+    (function init() {
+      const phase = getPhase();
+      if (phase === 'secret') runSecretPhase();
+      else if (phase === 'ready') runReadyPhase();
+      else runRunningPhase();
+    })();
+
+  function showPasswordModal() {
+    document.getElementById('password-overlay').style.display = 'flex';
+    document.getElementById('pw-input').value = '';
+    document.getElementById('pw-error').style.display = 'none';
+    setTimeout(() => document.getElementById('pw-input').focus(), 100);
+  }
+  function verifyPassword() {
+    const input = document.getElementById('pw-input').value;
+    const error = document.getElementById('pw-error');
+    if (input === '20260703') {
+      document.getElementById('password-overlay').style.display = 'none';
+      document.querySelector('.mission-deck').scrollIntoView({ behavior: 'smooth' });
+    } else {
+      error.textContent = '密码错误，请重试';
+      error.style.display = 'block';
+      document.getElementById('pw-input').value = '';
+      document.getElementById('pw-input').focus();
+    }
+  }
+  document.getElementById('pw-input').addEventListener('keydown', e => { if (e.key === 'Enter') verifyPassword(); });
+  </script>
+</body>
+</html>

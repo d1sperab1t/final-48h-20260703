@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>莫干山 48H Break Point</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --track: #006D7D;
+      --track2: #0097A8;
+      --ink: #07100F;
+      --white: #F7F4EA;
+      --cream: #E8DEC9;
+      --lime: #C8DD4B;
+      --orange: #E46C34;
+      --pink: #A64B70;
+      --blue-dark: #053C4B;
+      --line: rgba(247,244,234,0.22);
+      --muted: rgba(247,244,234,0.72);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      min-height: 100vh;
+      color: var(--white);
+      background: #052A34;
+      font-family: Inter, Helvetica, Arial, "PingFang SC", "Microsoft YaHei", sans-serif;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(circle at 20% 15%, rgba(255,255,255,0.18), transparent 26%),
+        radial-gradient(circle at 72% 12%, rgba(200,221,75,0.18), transparent 28%),
+        linear-gradient(135deg, #006A78, #073946 48%, #03191F);
+      z-index: 0;
+    }
+
+    body::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background:
+        repeating-radial-gradient(circle at 30% 20%, rgba(255,255,255,0.055) 0 1px, transparent 1px 3px),
+        repeating-linear-gradient(0deg, rgba(255,255,255,0.032) 0 1px, transparent 1px 7px);
+      mix-blend-mode: overlay;
+      opacity: 0.9;
+      pointer-events: none;
+      z-index: 5;
+    }
+
+    #motion-canvas {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    .page {
+      position: relative;
+      z-index: 2;
+      width: min(100%, 560px);
+      min-height: 100vh;
+      margin: 0 auto;
+      background: rgba(0, 62, 75, 0.28);
+      overflow: hidden;
+      box-shadow: 0 0 90px rgba(0,0,0,0.45);
+    }
+
+    .hero {
+      position: relative;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 22px 24px 28px;
+      overflow: hidden;
+      isolation: isolate;
+    }
+
+    .hero::before,
+    .hero::after {
+      content: "";
+      position: absolute;
+      border-radius: 999px;
+      filter: blur(18px);
+      z-index: -1;
+      animation: bodyBlur 5.2s ease-in-out infinite;
+    }
+
+    .hero::before {
+      width: 430px;
+      height: 180px;
+      left: -120px;
+      top: 54px;
+      background: linear-gradient(90deg, rgba(8,14,17,0.88), rgba(232,108,52,0.52), rgba(247,244,234,0.28));
+      transform: rotate(24deg);
+    }
+
+    .hero::after {
+      width: 520px;
+      height: 150px;
+      right: -190px;
+      bottom: 142px;
+      background: linear-gradient(90deg, rgba(247,244,234,0.72), rgba(232,108,52,0.42), rgba(8,14,17,0.74));
+      transform: rotate(-18deg);
+      animation-delay: -1.8s;
+    }
+
+    .ghost-limb {
+      position: absolute;
+      inset: auto;
+      border-radius: 999px;
+      pointer-events: none;
+      z-index: -1;
+      filter: blur(10px);
+      opacity: 0.9;
+      mix-blend-mode: screen;
+      animation: limbSwing 4.8s ease-in-out infinite;
+    }
+
+    .limb-a { width: 270px; height: 72px; left: 12px; top: 210px; background: rgba(247,244,234,0.5); transform: rotate(-32deg); }
+    .limb-b { width: 230px; height: 62px; right: -42px; top: 120px; background: rgba(6,15,16,0.86); transform: rotate(32deg); animation-delay: -1.1s; }
+    .limb-c { width: 320px; height: 68px; left: -70px; bottom: 210px; background: rgba(232,108,52,0.52); transform: rotate(14deg); animation-delay: -2s; }
+
+    .topbar {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 18px;
+      position: relative;
+      z-index: 2;
+    }
+
+    .brand small,
+    .nav-link,
+    .micro,
+    .credits,
+    .pill,
+    .mini-meta {
+      font-size: 10px;
+      letter-spacing: 1.5px;
+      line-height: 1.2;
+    }
+
+    .brand strong {
+      display: block;
+      font-size: 12px;
+      letter-spacing: 1px;
+    }
+
+    .brand small {
+      display: block;
+      margin-top: 4px;
+      color: var(--muted);
+    }
+
+    .nav-link {
+      color: var(--white);
+      text-decoration: none;
+      border: 1px solid rgba(247,244,234,0.5);
+      border-radius: 999px;
+      padding: 8px 13px;
+      background: rgba(255,255,255,0.08);
+      backdrop-filter: blur(10px);
+      transition: transform 0.2s ease, background 0.2s ease;
+    }
+
+    .nav-link:hover { transform: translateY(-2px); background: rgba(255,255,255,0.16); }
+
+    .center-title {
+      position: relative;
+      text-align: center;
+      display: grid;
+      place-items: center;
+      min-height: 52vh;
+      padding: 36px 0 18px;
+    }
+
+    .micro {
+      color: var(--white);
+      opacity: 0.9;
+      margin-bottom: 8px;
+      font-weight: 800;
+    }
+
+    h1 {
+      font-size: clamp(54px, 15vw, 86px);
+      line-height: 0.83;
+      letter-spacing: -4px;
+      font-weight: 950;
+      color: var(--white);
+      text-shadow: 0 8px 26px rgba(0,0,0,0.28);
+      transform: skewX(-7deg);
+      animation: titlePulse 2.4s ease-in-out infinite;
+    }
+
+    h1 span {
+      display: block;
+    }
+
+    .speed-word {
+      position: relative;
+      display: inline-block;
+    }
+
+    .speed-word::before,
+    .speed-word::after {
+      content: attr(data-text);
+      position: absolute;
+      inset: 0;
+      color: var(--white);
+      overflow: hidden;
+      pointer-events: none;
+    }
+
+    .speed-word::before {
+      clip-path: inset(0 0 56% 0);
+      transform: translateX(-6px);
+      opacity: 0.55;
+      animation: glitchA 1.8s steps(2,end) infinite;
+    }
+
+    .speed-word::after {
+      clip-path: inset(54% 0 0 0);
+      transform: translateX(7px);
+      opacity: 0.42;
+      animation: glitchB 2.2s steps(2,end) infinite;
+    }
+
+    .subtitle {
+      max-width: 360px;
+      margin: 16px auto 0;
+      color: rgba(247,244,234,0.88);
+      font-size: 12px;
+      line-height: 1.8;
+      letter-spacing: 0.8px;
+      text-align: center;
+      font-weight: 700;
+    }
+
+    .pulse-control {
+      position: relative;
+      width: 168px;
+      height: 44px;
+      margin: 24px auto 0;
+      border: 1px solid rgba(247,244,234,0.64);
+      border-radius: 999px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      color: var(--white);
+      background: rgba(255,255,255,0.08);
+      backdrop-filter: blur(12px);
+      cursor: pointer;
+      overflow: hidden;
+      text-decoration: none;
+    }
+
+    .pulse-control::before {
+      content: "";
+      position: absolute;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      border: 1px solid rgba(247,244,234,0.78);
+      left: 15px;
+      animation: knobRun 2.6s ease-in-out infinite;
+    }
+
+    .pulse-control span { position: relative; z-index: 1; font-size: 10px; letter-spacing: 1px; font-weight: 800; }
+
+    .film-dots {
+      display: flex;
+      justify-content: center;
+      gap: 7px;
+      margin-top: 16px;
+    }
+
+    .film-dots i {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: rgba(247,244,234,0.32);
+      animation: dotBeat 1.4s ease-in-out infinite;
+    }
+
+    .film-dots i:nth-child(2) { animation-delay: .12s; }
+    .film-dots i:nth-child(3) { animation-delay: .24s; }
+    .film-dots i:nth-child(4) { animation-delay: .36s; }
+    .film-dots i:nth-child(5) { animation-delay: .48s; }
+
+    .bottom-panel {
+      display: grid;
+      gap: 18px;
+      position: relative;
+      z-index: 2;
+    }
+
+    .stat-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+
+    .stat {
+      border-top: 1px solid rgba(247,244,234,0.52);
+      padding-top: 9px;
+      min-height: 56px;
+    }
+
+    .stat small {
+      display: block;
+      color: rgba(247,244,234,0.72);
+      font-size: 9px;
+      letter-spacing: 1px;
+      margin-bottom: 5px;
+    }
+
+    .stat strong {
+      display: block;
+      color: var(--white);
+      font-size: 14px;
+      line-height: 1.15;
+      font-weight: 900;
+    }
+
+    .marquee {
+      margin: 0 -24px;
+      overflow: hidden;
+      background: var(--white);
+      color: var(--track);
+      padding: 9px 0;
+      transform: rotate(-1.5deg);
+    }
+
+    .marquee-track {
+      display: flex;
+      gap: 22px;
+      white-space: nowrap;
+      animation: marquee 14s linear infinite;
+    }
+
+    .marquee-track span {
+      font-size: 12px;
+      font-weight: 950;
+      letter-spacing: 1px;
+    }
+
+    .section {
+      padding: 32px 24px;
+      background: #F7F4EA;
+      color: #08100F;
+    }
+
+    .section.dark {
+      background: #061E26;
+      color: var(--white);
+    }
+
+    .section-head {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 18px;
+    }
+
+    .kicker {
+      font-size: 10px;
+      font-weight: 900;
+      letter-spacing: 1.5px;
+      color: var(--orange);
+      margin-bottom: 6px;
+    }
+
+    h2 {
+      font-size: 36px;
+      line-height: 0.92;
+      letter-spacing: -2px;
+      font-weight: 950;
+    }
+
+    .section-code {
+      font-size: 10px;
+      letter-spacing: 1px;
+      opacity: 0.62;
+      white-space: nowrap;
+    }
+
+    .sequence {
+      display: grid;
+      gap: 10px;
+    }
+
+    .seq-card {
+      min-height: 92px;
+      display: grid;
+      grid-template-columns: 56px 1fr auto;
+      gap: 12px;
+      align-items: center;
+      border: 1px solid rgba(8,16,15,0.16);
+      padding: 14px;
+      transition: transform .22s ease, background .22s ease;
+      cursor: pointer;
+    }
+
+    .seq-card:hover { transform: translateX(6px); background: rgba(0,109,125,0.08); }
+
+    .seq-no { font-size: 11px; font-weight: 900; color: var(--track); }
+    .seq-title { font-size: 16px; font-weight: 950; letter-spacing: -0.4px; }
+    .seq-desc { margin-top: 4px; font-size: 11px; line-height: 1.55; color: rgba(8,16,15,0.62); }
+    .seq-tag { font-size: 10px; border: 1px solid rgba(8,16,15,0.22); padding: 5px 7px; border-radius: 999px; white-space: nowrap; }
+
+    .credits-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+    }
+
+    .credit small {
+      display: block;
+      color: rgba(247,244,234,0.58);
+      font-size: 10px;
+      letter-spacing: 1px;
+      margin-bottom: 4px;
+    }
+
+    .credit strong {
+      display: block;
+      font-size: 14px;
+      line-height: 1.15;
+    }
+
+    footer {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 18px;
+      padding: 18px 24px 26px;
+      background: #061E26;
+      color: rgba(247,244,234,0.72);
+      font-size: 10px;
+      letter-spacing: 1px;
+    }
+
+    .ripple {
+      position: fixed;
+      width: 16px;
+      height: 16px;
+      border: 1px solid rgba(247,244,234,0.85);
+      border-radius: 50%;
+      pointer-events: none;
+      transform: translate(-50%, -50%) scale(1);
+      animation: ripple 0.7s ease-out forwards;
+      z-index: 100;
+    }
+
+    @keyframes bodyBlur { 0%,100% { transform: translateX(-2%) rotate(24deg) scale(1); } 50% { transform: translateX(4%) rotate(20deg) scale(1.05); } }
+    @keyframes limbSwing { 0%,100% { filter: blur(11px); opacity: .72; } 50% { filter: blur(20px); opacity: .95; } }
+    @keyframes titlePulse { 0%,100% { transform: skewX(-7deg) scale(1); } 50% { transform: skewX(-7deg) scale(1.018); } }
+    @keyframes glitchA { 0%,80%,100% { transform: translateX(-5px); } 82% { transform: translateX(-15px); } 86% { transform: translateX(4px); } }
+    @keyframes glitchB { 0%,76%,100% { transform: translateX(6px); } 78% { transform: translateX(18px); } 84% { transform: translateX(-4px); } }
+    @keyframes knobRun { 0%,100% { transform: translateX(0); } 50% { transform: translateX(108px); } }
+    @keyframes dotBeat { 0%,100% { opacity: .25; transform: scale(.75); } 50% { opacity: .9; transform: scale(1.15); } }
+    @keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+    @keyframes ripple { to { opacity: 0; transform: translate(-50%, -50%) scale(9); } }
+
+    @media (max-width: 600px) {
+      .page { width: 100%; }
+      .hero { padding: 18px 18px 26px; }
+      .brand small { display: none; }
+      h1 { font-size: clamp(52px, 17vw, 78px); }
+      .stat-row, .credits-grid { grid-template-columns: 1fr; }
+      .seq-card { grid-template-columns: 46px 1fr; }
+      .seq-tag { grid-column: 2; width: fit-content; }
+      .section { padding: 30px 18px; }
+      .section-head { display: block; }
+      .section-code { display: block; margin-top: 8px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation: none !important; transition: none !important; }
+      html { scroll-behavior: auto; }
+    }
+  </style>
+</head>
+<body>
+<script>
+// 2026-07-03 14:00 CST (UTC+8)
+if (Date.now() >= new Date('2026-07-03T14:00:00+08:00').getTime()) {
+  window.location.replace('poster.html');
+}
+</script>
+  <canvas id="motion-canvas" aria-hidden="true"></canvas>
+
+  <main class="page" id="page">
+    <section class="hero">
+      <i class="ghost-limb limb-a"></i>
+      <i class="ghost-limb limb-b"></i>
+      <i class="ghost-limb limb-c"></i>
+
+      <div class="topbar">
+        <div class="brand"><strong>MOGANSHAN RUN CLUB</strong><small>48H / FIELD SCRIPT / 2026</small></div>
+        <a class="nav-link" href="poster.html">MISSION →</a>
+      </div>
+
+      <div class="center-title">
+        <div>
+          <div class="micro">DEEPBEAT PRESENTS</div>
+          <h1><span>Break</span><span class="speed-word" data-text="Point">Point</span></h1>
+          <p class="subtitle">RUN CLUB / MOGANSHAN / FIELD CASE<br>48小时山野任务，<br>把奔跑、线索和路线设计剪成一支现场运动片。</p>
+          <a class="pulse-control" href="poster.html"><span>OPEN FIELD CASE</span></a>
+          <div class="film-dots"><i></i><i></i><i></i><i></i><i></i></div>
+        </div>
+      </div>
+
+      <div class="bottom-panel">
+        <div class="stat-row">
+          <div class="stat"><small>DATE</small><strong>JUL 03-05</strong></div>
+          <div class="stat"><small>TIME</small><strong>48 HRS</strong></div>
+          <div class="stat"><small>ADD</small><strong>MOGANSHAN</strong></div>
+        </div>
+        <div class="marquee" aria-hidden="true">
+          <div class="marquee-track">
+            <span>FOG RUN</span><span>BREAK POINT</span><span>MISSION CARD</span><span>TRAIL SPEED</span><span>LOST ROUTE</span><span>FIELD SCRIPT</span>
+            <span>FOG RUN</span><span>BREAK POINT</span><span>MISSION CARD</span><span>TRAIL SPEED</span><span>LOST ROUTE</span><span>FIELD SCRIPT</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-head"><div><div class="kicker">SEQUENCE</div><h2>Beyond<br>Number<br>One</h2></div><span class="section-code">RUN CLUB / JERSEY / MOGANSHAN</span></div>
+      <div class="sequence">
+        <article class="seq-card"><div class="seq-no">01</div><div><div class="seq-title">抵达后，任务不是开始，是突然出现</div><div class="seq-desc">补给包、房间线索、神秘代码，像运动广告里的第一帧。</div></div><div class="seq-tag">ARRIVAL</div></article>
+        <article class="seq-card"><div class="seq-no">02</div><div><div class="seq-title">组队、追踪、奔跑，节奏必须快</div><div class="seq-desc">传承人搜寻、户外挑战、落日追光跑，把剧情推到运动状态。</div></div><div class="seq-tag">CHASE</div></article>
+        <article class="seq-card"><div class="seq-no">03</div><div><div class="seq-title">最后把关键词变成路线</div><div class="seq-desc">路线试跑和认证收束全部线索，留下自己的山野编号。</div></div><div class="seq-tag">ROUTE</div></article>
+      </div>
+    </section>
+
+    <section class="section dark">
+      <div class="section-head"><div><div class="kicker">CREDITS</div><h2>RUN<br>WITH<br>THE CASE</h2></div><span class="section-code">NO FINISH LINE</span></div>
+      <div class="credits-grid">
+        <div class="credit"><small>LOCATION</small><strong>莫干山<br>德清</strong></div>
+        <div class="credit"><small>DIRECTOR</small><strong>山野任务<br>现场生成</strong></div>
+        <div class="credit"><small>SOUND</small><strong>风声<br>脚步声</strong></div>
+        <div class="credit"><small>PRODUCTION</small><strong>DEEPBEAT<br>记路家</strong></div>
+        <div class="credit"><small>GENRE</small><strong>运动<br>剧本杀</strong></div>
+        <div class="credit"><small>DROP</small><strong>2026<br>JULY</strong></div>
+      </div>
+    </section>
+
+    <footer><span>莫干山户外运动协会 × 山野梦想家 × DEEPBEAT 记路家</span></footer>
+  </main>
+
+  <script>
+    (function bootMotionCover() {
+      const canvas = document.getElementById('motion-canvas');
+      const ctx = canvas.getContext('2d');
+      const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      let width = 0, height = 0, dpr = 1, pointerX = 0.5, pointerY = 0.5;
+      const streaks = Array.from({ length: 58 }, () => ({ x: Math.random(), y: Math.random(), len: 28 + Math.random() * 110, speed: .25 + Math.random() * 1.15, hue: Math.random() > .55 ? 184 : (Math.random() > .5 ? 25 : 62) }));
+      function resize(){ dpr=Math.min(window.devicePixelRatio||1,2); width=innerWidth; height=innerHeight; canvas.width=Math.floor(width*dpr); canvas.height=Math.floor(height*dpr); canvas.style.width=width+'px'; canvas.style.height=height+'px'; ctx.setTransform(dpr,0,0,dpr,0,0); }
+      function frame(t){ ctx.clearRect(0,0,width,height); ctx.globalCompositeOperation='lighter'; const px=(pointerX-.5)*32, py=(pointerY-.5)*20; streaks.forEach(s=>{ s.x += s.speed*.0018; s.y += Math.sin(t*.001+s.speed)*.0005; if(s.x>1.18){s.x=-.18;s.y=Math.random();} const x=s.x*width+px, y=s.y*height+py; ctx.globalAlpha=.14+s.speed*.08; ctx.strokeStyle=`hsl(${s.hue} 88% 64%)`; ctx.lineWidth=1.6; ctx.beginPath(); ctx.moveTo(x,y); ctx.lineTo(x-s.len,y+s.len*.34); ctx.stroke(); }); ctx.globalAlpha=1; ctx.globalCompositeOperation='source-over'; if(!reduced) requestAnimationFrame(frame); }
+      addEventListener('pointermove', e=>{ pointerX=e.clientX/innerWidth; pointerY=e.clientY/innerHeight; document.documentElement.style.setProperty('--px', pointerX); document.documentElement.style.setProperty('--py', pointerY); });
+      addEventListener('click', e=>{ const r=document.createElement('span'); r.className='ripple'; r.style.left=e.clientX+'px'; r.style.top=e.clientY+'px'; document.body.appendChild(r); setTimeout(()=>r.remove(),760); });
+      resize(); addEventListener('resize', resize); requestAnimationFrame(frame);
+    })();
+  </script>
+</body>
+</html>
