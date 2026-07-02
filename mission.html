@@ -631,10 +631,23 @@
 
     function updateCard04Content() {
       if (!currentParticipant) return;
-      const loc = PARTNER_LOCATIONS[currentParticipant.code];
-      if (!loc) return;
       const el = document.getElementById('card04-location');
-      if (el) {
+      if (!el) return;
+      // 7组：三个传承人一起展示
+      if (currentParticipant.group === '7') {
+        const locs = [
+          PARTNER_LOCATIONS['R2Q5L8'],
+          PARTNER_LOCATIONS['V6A9T4'],
+          PARTNER_LOCATIONS['H1C8N3']
+        ].filter(Boolean);
+        let html = '<p class="card-copy">你们需要分别找到以下三位传承人：</p>';
+        locs.forEach(loc => {
+          html += '<div class="card-quote" style="margin-top:10px;">👤 <strong>' + loc.inheritor + '</strong><br>📍 ' + loc.address + '</div>';
+        });
+        el.innerHTML = html;
+      } else {
+        const loc = PARTNER_LOCATIONS[currentParticipant.code];
+        if (!loc) return;
         el.innerHTML = '<p class="card-copy">寻找传承人 <strong>' + loc.inheritor + '</strong></p>' +
           '<div class="card-quote">📍 地址：' + loc.address + '</div>';
       }
