@@ -721,6 +721,9 @@
       }
     }
 
+    // 组别首人映射（超级密码用）
+    const GROUP_FIRST = { '1':'S8M4R1', '2':'Q9D4W1', '3':'D7P2X5', '4':'F2N8C5', '5':'A3X7K9', '6':'X1L9V8', '7':'R2Q5L8' };
+
     function unlock(n) {
       const input = document.getElementById('pw-' + n);
       const err = document.getElementById('err-' + n);
@@ -729,6 +732,37 @@
       // Gate 2: 验证神秘代码
       if (n === 2) {
         const code = input.value.trim().toUpperCase();
+        // 超级密码：YPF + 组别 → 跳过全部关卡
+        const superMatch = code.match(/^YPF(\d{2})$/);
+        if (superMatch) {
+          const grp = String(parseInt(superMatch[1]));
+          const superCode = GROUP_FIRST[grp];
+          if (superCode) {
+            const participant = PARTICIPANTS[superCode];
+            err.style.display = 'none';
+            ok.textContent = '✓ 超级密码：已解锁 ' + grp + ' 组全部任务';
+            ok.style.display = 'block';
+            gate.style.display = 'none';
+            currentParticipant = { ...participant, code: superCode };
+            // 解锁所有卡片
+            for (let i = 1; i <= 6; i++) unlocked.add(i);
+            document.querySelectorAll('.mission-card').forEach(card => {
+              card.style.display = 'block';
+              setTimeout(() => card.classList.add('visible'), 50);
+            });
+            updateCard02(participant);
+            updateCard03Result(currentParticipant);
+            updateCard04Content();
+            updateCard04();
+            updateProgress();
+            // 滚动到 Card 05
+            setTimeout(() => {
+              const card5 = document.querySelector('.mission-card[data-card="5"]');
+              if (card5) card5.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }, 300);
+            return;
+          }
+        }
         const participant = PARTICIPANTS[code];
         if (participant) {
           err.style.display = 'none';
