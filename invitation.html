@@ -496,9 +496,10 @@
 </head>
 <body>
 <script>
-// 2026-07-03 14:00 CST (UTC+8)
-if (Date.now() >= new Date('2026-07-03T14:00:00+08:00').getTime()) {
-  window.location.replace('poster.html');
+// 2026-07-03 时间路由
+const now = Date.now();
+if (now >= new Date('2026-07-03T14:30:00+08:00').getTime()) {
+  window.location.replace('mission.html');
 }
 </script>
   <canvas id="motion-canvas" aria-hidden="true"></canvas>

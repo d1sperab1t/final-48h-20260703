@@ -44,7 +44,7 @@
 
     .page-sub { max-width:430px; color:#DDD1B6; font-size:13px; line-height:1.85; letter-spacing:1px; padding-left:14px; border-left:2px solid var(--clay); background:linear-gradient(90deg,rgba(234,224,200,0.06),transparent); margin-top:18px; position:relative; z-index:2; }
 
-    .progress-bar { display:grid; grid-template-columns:repeat(5,1fr); gap:3px; height:5px; margin-top:22px; position:relative; z-index:2; }
+    .progress-bar { display:grid; grid-template-columns:repeat(6,1fr); gap:3px; height:5px; margin-top:22px; position:relative; z-index:2; }
     .progress-bar div { background:rgba(255,255,255,0.08); transition:background 0.6s ease; }
     .progress-bar div.done { background:var(--moss); }
     .progress-bar div.active { background:var(--clay); }
@@ -87,6 +87,21 @@
     .clue-label { flex:0 0 auto; color:var(--clay); font-size:10px; font-weight:900; letter-spacing:1px; min-width:52px; }
     .clue-blank { flex:1; height:1px; background:linear-gradient(90deg,rgba(234,224,200,0.4),rgba(234,224,200,0.1)); position:relative; }
     .clue-blank::before { content:""; position:absolute; left:0; top:-3px; width:6px; height:6px; border-radius:50%; background:var(--clay); opacity:0.5; }
+    .clue-text { flex:1; color:#DDD1B6; font-size:12px; line-height:1.6; letter-spacing:0.5px; padding:4px 0; }
+
+    .clue-item { margin-bottom:14px; }
+    .clue-item:last-child { margin-bottom:0; }
+    .answer-input {
+      width:100%; margin-top:8px; padding:10px 12px;
+      background:rgba(234,224,200,0.06); border:1px solid rgba(234,224,200,0.22);
+      color:var(--paper); font-size:13px; font-weight:700; letter-spacing:1px;
+      outline:none; transition:border-color 0.2s ease; box-sizing:border-box;
+    }
+    .answer-input:focus { border-color:var(--moss); }
+    .answer-input::placeholder { color:var(--dim); font-weight:400; }
+    .answer-btn { width:100%; margin-top:16px; justify-content:center; }
+    .answer-error { display:none; color:var(--clay); font-size:11px; letter-spacing:2px; margin-top:10px; }
+    .answer-success { display:none; color:var(--moss); font-size:11px; letter-spacing:2px; margin-top:10px; }
 
     .card-hint { margin-top:14px; padding:10px 14px; background:rgba(122,141,74,0.08); border-left:2px solid var(--moss); color:var(--muted); font-size:11px; font-style:italic; line-height:1.7; letter-spacing:0.5px; position:relative; z-index:1; }
 
@@ -97,6 +112,49 @@
     .badge-dot { width:6px; height:6px; border-radius:50%; background:var(--moss); }
 
     .card-divider { height:1px; margin:14px 0; background:linear-gradient(90deg,transparent,rgba(234,224,200,0.2),transparent); position:relative; z-index:1; }
+
+    /* ─── Welcome Section ─── */
+    .card-welcome {
+      padding:18px 18px 14px; margin:-18px -18px 16px;
+      background:linear-gradient(135deg,rgba(122,141,74,0.2),rgba(228,108,52,0.12),transparent);
+      border-bottom:1px solid rgba(234,224,200,0.1);
+      border-top:3px solid var(--clay); position:relative; z-index:1;
+    }
+    .welcome-greeting {
+      color:var(--paper); font-size:22px; font-weight:950; letter-spacing:1px;
+      margin-bottom:6px; line-height:1.3;
+    }
+    .welcome-greeting span { color:var(--clay); }
+    .welcome-group {
+      color:var(--muted); font-size:11px; letter-spacing:2px; text-transform:uppercase;
+    }
+    .welcome-group span { color:var(--moss); font-weight:900; }
+    .solo-notice {
+      margin-top:12px; padding:14px 16px;
+      background:rgba(184,100,53,0.1); border-left:3px solid var(--clay);
+      color:#DDD1B6; font-size:13px; line-height:1.85; letter-spacing:0.5px;
+    }
+    .partner-result {
+      margin:14px 0; padding:16px;
+      background:rgba(122,141,74,0.1); border-left:3px solid var(--moss);
+      color:#DDD1B6; font-size:14px; line-height:1.85; letter-spacing:0.5px;
+    }
+    .partner-result strong { color:var(--paper); font-weight:900; }
+
+    .card-task-content {
+      position:relative; z-index:1; margin:14px 0;
+    }
+    .task-group-label {
+      display:inline-block; padding:4px 10px; margin-bottom:12px;
+      background:rgba(122,141,74,0.15); border:1px solid rgba(122,141,74,0.3);
+      color:var(--moss); font-size:10px; font-weight:900; letter-spacing:2px;
+    }
+    .task-body {
+      color:#DDD1B6; font-size:13px; line-height:1.85; letter-spacing:0.5px;
+    }
+    .task-placeholder {
+      color:var(--dim); font-style:italic; font-size:12px; letter-spacing:1px;
+    }
 
     .card-quote { margin:14px 0 0; padding:12px 16px; background:rgba(234,224,200,0.04); border-left:3px solid var(--paper2); color:#DDD1B6; font-size:13px; line-height:1.8; letter-spacing:0.5px; position:relative; z-index:1; }
     .card-quote em { color:var(--paper); font-style:normal; font-weight:900; }
@@ -129,6 +187,82 @@
     @keyframes ripple { to{opacity:0;transform:translate(-50%,-50%) scale(9)} }
     @keyframes unlockFlash { 0%{background:rgba(122,141,74,0.18)} 100%{background:rgba(255,255,255,0.018)} }
 
+    /* ─── 终极密码 ─── */
+    @keyframes ultimatePulse { 0%,100%{box-shadow:0 0 20px rgba(184,100,53,0.15),0 0 60px rgba(184,100,53,0.05),inset 0 0 30px rgba(184,100,53,0.03)} 50%{box-shadow:0 0 30px rgba(184,100,53,0.3),0 0 80px rgba(184,100,53,0.1),inset 0 0 40px rgba(184,100,53,0.06)} }
+    @keyframes ultimateBorder { 0%,100%{border-color:rgba(184,100,53,0.3)} 50%{border-color:rgba(234,224,200,0.5)} }
+    @keyframes ultimateGlow { 0%,100%{text-shadow:0 0 12px rgba(184,100,53,0.4),0 0 30px rgba(184,100,53,0.15)} 50%{text-shadow:0 0 20px rgba(184,100,53,0.7),0 0 50px rgba(184,100,53,0.25)} }
+    @keyframes diamondSpin { 0%{transform:rotate(0deg) scale(1)} 50%{transform:rotate(180deg) scale(1.1)} 100%{transform:rotate(360deg) scale(1)} }
+
+    #ultimate-gate {
+      padding:32px 28px 36px;
+      position:relative; z-index:2;
+      background:linear-gradient(160deg,rgba(184,100,53,0.14),rgba(122,141,74,0.08) 40%,rgba(0,109,125,0.12)),
+        linear-gradient(180deg,rgba(0,45,56,0.7),rgba(6,16,20,0.9));
+      border:1px solid rgba(184,100,53,0.3);
+      border-top:3px solid var(--clay);
+      animation:ultimatePulse 3s ease-in-out infinite,ultimateBorder 3s ease-in-out infinite;
+    }
+    #ultimate-gate::before {
+      content:""; position:absolute; inset:-1px;
+      background:linear-gradient(135deg,rgba(184,100,53,0.4),transparent 30%,transparent 70%,rgba(122,141,74,0.3));
+      pointer-events:none; z-index:0;
+      mask:linear-gradient(#000,#000) content-box,linear-gradient(#000,#000);
+      mask-composite:exclude; -webkit-mask-composite:xor;
+      padding:1px; opacity:0.5;
+    }
+    #ultimate-gate::after {
+      content:""; position:absolute; top:0; left:50%; transform:translateX(-50%);
+      width:120px; height:60px;
+      background:radial-gradient(ellipse,rgba(184,100,53,0.18),transparent 70%);
+      filter:blur(16px); pointer-events:none; z-index:0;
+    }
+    #ultimate-gate .ultimate-icon {
+      display:flex; align-items:center; justify-content:center;
+      width:56px; height:56px; margin:0 auto 18px;
+      background:linear-gradient(135deg,rgba(184,100,53,0.25),rgba(234,224,200,0.1));
+      border:1px solid rgba(184,100,53,0.4);
+      border-radius:50%; position:relative; z-index:1;
+      animation:diamondSpin 8s linear infinite;
+    }
+    #ultimate-gate .ultimate-icon span { font-size:26px; }
+    #ultimate-gate .gate-label {
+      color:var(--paper); font-size:13px; letter-spacing:4px; font-weight:900;
+      margin-bottom:8px; text-align:center; position:relative; z-index:1;
+      animation:ultimateGlow 3s ease-in-out infinite;
+    }
+    #ultimate-gate .ultimate-sub {
+      color:var(--muted); font-size:11px; letter-spacing:2px; text-align:center;
+      margin-bottom:18px; position:relative; z-index:1;
+    }
+    #ultimate-gate .card-copy {
+      text-align:center; margin-bottom:18px; font-size:13px;
+      color:#DDD1B6; position:relative; z-index:1;
+    }
+    #ultimate-gate .gate-row { position:relative; z-index:1; }
+    #ultimate-gate .gate-input {
+      font-size:18px; letter-spacing:6px; padding:14px 16px;
+      border-color:rgba(184,100,53,0.35);
+      background:linear-gradient(135deg,rgba(184,100,53,0.08),rgba(234,224,200,0.04));
+      transition:border-color 0.3s ease,box-shadow 0.3s ease;
+    }
+    #ultimate-gate .gate-input:focus {
+      border-color:var(--clay);
+      box-shadow:0 0 20px rgba(184,100,53,0.2),0 0 40px rgba(184,100,53,0.08);
+    }
+    #ultimate-gate .gate-btn {
+      background:linear-gradient(135deg,var(--clay),#9D4E2A);
+      border-color:var(--clay); color:var(--paper);
+      font-size:14px; letter-spacing:3px; padding:14px 22px;
+      transition:transform 0.2s ease,box-shadow 0.2s ease;
+    }
+    #ultimate-gate .gate-btn:hover {
+      transform:skewX(-10deg) translateY(-2px);
+      box-shadow:0 4px 20px rgba(184,100,53,0.35);
+    }
+    #ultimate-gate .gate-error, #ultimate-gate .gate-success {
+      text-align:center; position:relative; z-index:1;
+    }
+
     @media(max-width:600px){ .page{width:100%;border:0} .page-header{padding:72px 18px 24px} .cards-wrap{padding:18px} }
     @media(prefers-reduced-motion:reduce){ .page-header::before{animation:none} *{scroll-behavior:auto} }
   </style>
@@ -143,7 +277,7 @@
       <h1 class="page-title">山野<br><span class="burn" data-text="剧本杀">剧本杀</span></h1>
       <p class="page-sub">按顺序解锁，每张任务卡都是下一关的钥匙。</p>
       <div class="progress-bar" id="progress-bar">
-        <div class="active"></div><div></div><div></div><div></div><div></div>
+        <div class="active"></div><div></div><div></div><div></div><div></div><div></div>
       </div>
       <div class="beat-bars"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
     </header>
@@ -171,13 +305,14 @@
       <div class="gate" id="gate-2">
         <div class="gate-label">◆ 输入解锁密码以解锁 CARD 02</div>
         <div class="gate-row">
-          <input type="password" class="gate-input" id="pw-2" placeholder="请输入密码" autocomplete="off">
+          <input type="password" class="gate-input" id="pw-2" placeholder="请输入你的神秘代码" autocomplete="off">
           <button class="gate-btn" onclick="unlock(2)"><span>解锁 ↗</span></button>
         </div>
         <div class="gate-error" id="err-2">密码错误，请重试</div>
         <div class="gate-success" id="ok-2">✓ 已解锁 CARD 02</div>
       </div>
       <article class="mission-card" data-code="02" data-card="2">
+        <div class="card-welcome" id="card02-welcome" style="display:none;"></div>
         <div class="card-hero">
           <div class="card-hero-icon">🤝</div>
           <div class="card-hero-sub">TEAM ASSEMBLY</div>
@@ -186,76 +321,124 @@
         <div class="card-meta"><span class="card-code">CARD 02</span><span class="card-status">TEAM</span></div>
         <h3 class="card-title">集结队友</h3>
         <p class="card-copy">你们不是一个人在战斗。</p>
-        <div class="card-quote">寻找你的队友，组成小队。<em>2:30 前抵达指定位置</em>，拍摄任务即将开始。</div>
+        <div class="card-quote">请在14:30前抵达酒店一楼大厅，我们将要开始寻找你的剧本杀搭子。</div>
         <div class="card-deadline"><div class="deadline-dot"></div>DEADLINE · 14:30</div>
         <div class="card-divider"></div>
         <div class="card-hint">⚠️ 迟到的人，将接受特别惩罚。倒计时，现在开始。</div>
       </article>
 
-      <!-- Card 03: 传承人搜寻 — gate -->
+      <!-- Card 03: 搭子解锁 — gate -->
       <div class="gate" id="gate-3">
-        <div class="gate-label">◆ 输入解锁密码以解锁 CARD 03</div>
-        <div class="gate-row">
-          <input type="password" class="gate-input" id="pw-3" placeholder="请输入密码" autocomplete="off">
-          <button class="gate-btn" onclick="unlock(3)"><span>解锁 ↗</span></button>
-        </div>
+        <div class="gate-label" id="gate-3-label">◆ 输入解锁密码以解锁 CARD 03</div>
+        <div id="gate-3-fields"></div>
         <div class="gate-error" id="err-3">密码错误，请重试</div>
         <div class="gate-success" id="ok-3">✓ 已解锁 CARD 03</div>
       </div>
       <article class="mission-card" data-code="03" data-card="3">
+        <div class="card-welcome" id="card03-result" style="display:none;"></div>
         <div class="card-hero">
           <div class="card-hero-icon">🗺️</div>
-          <div class="card-hero-sub">TRACE THE INHERITOR</div>
-          <div class="card-hero-title">传承人搜寻任务</div>
+          <div class="card-hero-sub">YOUR PARTNER</div>
+          <div class="card-hero-title">你的剧本杀搭子</div>
         </div>
-        <div class="card-meta"><span class="card-code">CARD 03</span><span class="card-status">TRACE</span></div>
-        <h3 class="card-title">传承人搜寻</h3>
-        <p class="card-copy">寻找莫干山传承人的任务，正式开始！请根据以下线索，找到你的传承人——</p>
-        <div class="card-clues">
-          <div class="clue-row"><div class="clue-label">线索 01</div><div class="clue-blank"></div></div>
-          <div class="clue-row"><div class="clue-label">线索 02</div><div class="clue-blank"></div></div>
-          <div class="clue-row"><div class="clue-label">线索 03</div><div class="clue-blank"></div></div>
+        <div class="card-meta"><span class="card-code">CARD 03</span><span class="card-status">PARTNER</span></div>
+        <h3 class="card-title">搭子揭晓</h3>
+        <div id="card03-content">
+          <p class="card-copy">输入队友的神秘代码，找到你的剧本杀搭子。</p>
         </div>
-        <div class="card-badge"><div class="badge-dot"></div>找到传承人后，与 TA 合影作为通关凭证</div>
         <div class="card-divider"></div>
-        <div class="card-hint">💡 答案不会直接告诉你，用心感受这里的人和故事。</div>
+        <div class="card-hint">🎯 搭子就是你接下来的搭档，一起完成后续任务。</div>
       </article>
 
       <!-- Cards 04 + 05: gate (unlock together) -->
       <div class="gate" id="gate-4">
-        <div class="gate-label">◆ 输入解锁密码以解锁 CARD 04 & 05</div>
+        <div class="gate-label">◆ 输入解锁密码以解锁 CARD 04</div>
         <div class="gate-row">
-          <input type="password" class="gate-input" id="pw-4" placeholder="请输入密码" autocomplete="off">
+          <input type="text" class="gate-input" id="pw-4" placeholder="请输入解锁密码" autocomplete="off">
           <button class="gate-btn" onclick="unlock(4)"><span>解锁 ↗</span></button>
         </div>
         <div class="gate-error" id="err-4">密码错误，请重试</div>
-        <div class="gate-success" id="ok-4">✓ 已解锁 CARD 04 & 05</div>
+        <div class="gate-success" id="ok-4">✓ 已解锁 CARD 04</div>
       </div>
       <article class="mission-card" data-code="04" data-card="4">
         <div class="card-hero">
+          <div class="card-hero-icon">🔍</div>
+          <div class="card-hero-sub">FIND YOUR INHERITOR</div>
+          <div class="card-hero-title">寻找传承人</div>
+        </div>
+        <div class="card-meta"><span class="card-code">CARD 04</span><span class="card-status">INHERITOR</span></div>
+        <h3 class="card-title">寻找传承人</h3>
+        <div id="card04-location">
+          <p class="card-copy">传承人信息加载中...</p>
+        </div>
+        <div class="card-divider"></div>
+        <div class="card-steps">
+          <div class="card-step"><div class="step-num">01</div><div class="step-text">请到指定位置，喊出暗号：<strong>我是主理人，请问您是传承人吗</strong></div></div>
+          <div class="card-step"><div class="step-num">02</div><div class="step-text">听传承人讲述莫干山的故事，并利用手中的关键词任务卡将关键词全部问出</div></div>
+          <div class="card-step"><div class="step-num">03</div><div class="step-text">用手卡交换传承人手中地图碎片</div></div>
+        </div>
+        <div class="card-divider"></div>
+        <div class="card-hint">🗺️ 完成以上三个任务，即可获得地图碎片，继续前进。</div>
+      </article>
+      <!-- Gate 5: 身份证号验证 -->
+      <div class="gate" id="gate-5">
+        <div class="gate-label">◆ 输入队友生日组合解锁 CARD 05</div>
+        <div class="gate-row">
+          <input type="text" class="gate-input" id="pw-5" placeholder="请输入队友生日组合" autocomplete="off">
+          <button class="gate-btn" onclick="unlock(5)"><span>解锁 ↗</span></button>
+        </div>
+        <div class="gate-error" id="err-5">密码错误，请重试</div>
+        <div class="gate-success" id="ok-5">✓ 已解锁 CARD 05</div>
+      </div>
+      <article class="mission-card" data-code="05" data-card="5">
+        <div class="card-hero">
           <div class="card-hero-icon">🏔️</div>
-          <div class="card-hero-sub">FIELD CHALLENGE</div>
-          <div class="card-hero-title">户外挑战关卡</div>
+          <div class="card-hero-sub">MOGANSHAN OUTDOOR EXPLORATION</div>
+          <div class="card-hero-title">探索莫干山户外运动协会</div>
         </div>
-        <div class="card-meta"><span class="card-code">CARD 04</span><span class="card-status">FIELD</span></div>
-        <h3 class="card-title">户外挑战关卡</h3>
+        <div class="card-meta"><span class="card-code">CARD 05</span><span class="card-status">FIELD</span></div>
+        <h3 class="card-title">寻找山野答案</h3>
         <p class="card-copy">前往<strong>莫干山户外运动协会</strong>，答案就藏在一楼的某个角落。</p>
-        <div class="card-clues">
-          <div class="clue-row"><div class="clue-label">❓ 问题 01</div><div class="clue-blank"></div></div>
-          <div class="clue-row"><div class="clue-label">❓ 问题 02</div><div class="clue-blank"></div></div>
-          <div class="clue-row"><div class="clue-label">❓ 问题 03</div><div class="clue-blank"></div></div>
+        <div class="card-clues" id="card05-questions">
+          <div class="clue-item">
+            <div class="clue-row"><div class="clue-label">❓ 问题 01</div><div class="clue-text" id="q1"></div></div>
+            <input type="text" class="answer-input" id="a1" placeholder="请输入答案" autocomplete="off">
+          </div>
+          <div class="clue-item">
+            <div class="clue-row"><div class="clue-label">❓ 问题 02</div><div class="clue-text" id="q2"></div></div>
+            <input type="text" class="answer-input" id="a2" placeholder="请输入答案" autocomplete="off">
+          </div>
+          <div class="clue-item">
+            <div class="clue-row"><div class="clue-label">❓ 问题 03</div><div class="clue-text" id="q3"></div></div>
+            <input type="text" class="answer-input" id="a3" placeholder="请输入答案" autocomplete="off">
+          </div>
         </div>
-        <div class="card-badge"><div class="badge-dot"></div>全部答对，方可解锁下一关</div>
+        <div class="answer-error" id="answer-error">答案有误，请检查后重试</div>
+        <div class="answer-success" id="answer-success">✓ 全部正确！正在解锁下一关...</div>
+        <button class="gate-btn answer-btn" onclick="verifyAnswers()"><span>提交答案 ↗</span></button>
         <div class="card-divider"></div>
         <div class="card-hint">🔍 仔细看，认真找，答案就在眼前。</div>
       </article>
-      <article class="mission-card" data-code="05" data-card="5">
+      <!-- 终极密码 -->
+      <div class="gate" id="ultimate-gate" style="display:none;">
+        <div class="ultimate-icon"><span>◆</span></div>
+        <div class="gate-label">请输入终极密码</div>
+        <div class="ultimate-sub">FINAL UNLOCK</div>
+        <p class="card-copy">终极密码藏在你们所有人共同努力的结晶上。</p>
+        <div class="gate-row">
+          <input type="text" class="gate-input" id="pw-ultimate" placeholder="请输入终极密码" autocomplete="off">
+          <button class="gate-btn" onclick="verifyUltimate()"><span>解锁 ↗</span></button>
+        </div>
+        <div class="gate-error" id="err-ultimate">密码错误，请重试</div>
+        <div class="gate-success" id="ok-ultimate">✓ 终极密码正确！正在解锁...</div>
+      </div>
+      <article class="mission-card" data-code="06" data-card="6">
         <div class="card-hero">
           <div class="card-hero-icon">🎉</div>
           <div class="card-hero-sub">YOUR ROUTE</div>
           <div class="card-hero-title">恭喜！传承人任务完成！</div>
         </div>
-        <div class="card-meta"><span class="card-code">CARD 05</span><span class="card-status">ROUTE</span></div>
+        <div class="card-meta"><span class="card-code">CARD 06</span><span class="card-status">ROUTE</span></div>
         <h3 class="card-title">专属路线</h3>
         <p class="card-copy">你已经找到了属于你的传承人，也听见了莫干山的故事。</p>
         <div class="card-quote">接下来，轮到你来定义自己的旅程——<br>前往领取<em>「路线关键词卡」</em>，根据关键词，设计你的专属路线。</div>
@@ -272,23 +455,359 @@
     </footer>
   </main>
 
-  <script>
-    const PASSWORD = '123';
-    const GATE_MAP = { 2: [2], 3: [3], 4: [4, 5] };
+    <script>
+    // 神秘代码 → 参与者信息
+    const PARTICIPANTS = {
+      'S8M4R1': { group: '1', name: '张蕊', nick: '蕊蕊' },
+
+      'Q9D4W1': { group: '2', name: '钟政', nick: '钟政' },
+      'Z6T3H7': { group: '2', name: '廖泽睿RC', nick: 'Ricky' },
+      'D7P2X5': { group: '3', name: '尚淳', nick: '淳子' },
+      'F2N8C5': { group: '4', name: '钟楚婷', nick: '楚婷' },
+      'Y4J6P3': { group: '4', name: '余冰', nick: '柠檬冰' },
+      'A3X7K9': { group: '5', name: '何雨菲', nick: '龙猫猫' },
+      'B5R2M8': { group: '5', name: '冯佩仪', nick: 'Penny冯佩仪' },
+      'X1L9V8': { group: '6', name: '何珊', nick: '怪物珊' },
+      'R2Q5L8': { group: '7', name: '肖晓波', nick: 'Allen' },
+      'V6A9T4': { group: '7', name: '潘宁', nick: '潘宁' },
+      'H1C8N3': { group: '7', name: '陈伟君', nick: '伟君' },
+    };
+    const SOLO_CODES = ['S8M4R1', 'D7P2X5', 'X1L9V8'];
+    // 队友关系：代码 → 队友代码数组
+    const PAIRS = {
+      'S8M4R1': ['S8M4R1'],
+      'Q9D4W1': ['Z6T3H7'], 'Z6T3H7': ['Q9D4W1'],
+      'D7P2X5': ['D7P2X5'],
+      'F2N8C5': ['Y4J6P3'], 'Y4J6P3': ['F2N8C5'],
+      'A3X7K9': ['B5R2M8'], 'B5R2M8': ['A3X7K9'],
+      'X1L9V8': ['X1L9V8'],
+      'R2Q5L8': ['V6A9T4', 'H1C8N3'],
+      'V6A9T4': ['R2Q5L8', 'H1C8N3'],
+      'H1C8N3': ['R2Q5L8', 'V6A9T4'],
+    };
+    // 每人3题，同组无重复，全人唯一
+    const PARTICIPANT_QUESTIONS = {
+      'A3X7K9': ['户外协会陈列了一辆保时捷的车模，编号是多少？', '2023 UTMB获得50K女子组第一名的是谁？', '茶马山径赛事的距离是多少？'],
+      'B5R2M8': ['户外协会陈列了一把世界上独一无二的竹扇，它上面的logo是什么？', '云间花径是莫干山和哪座山一起举办的？', '2025年凯乐石莫干山跑山赛的奖牌形状是什么？'],
+      'Q9D4W1': ['莫干七尖赛事的距离是多少？', '莫干山首次网球比赛时间是哪一年？', '莫干山将在9月举办的"破晓生万物"莫干山越野赛是哪一天？'],
+      'Z6T3H7': ['漫漫15峰赛事的距离是多少？', '莫干山首次举办的登高赛时间是哪一年？', '莫干山今年的斯巴达勇士赛是几月几日？'],
+      'F2N8C5': ['户外协会陈列了一双参加过巨人之旅330km选手的鞋子，TA是谁？', '莫干山首次登高赛的女子组冠军是谁？', '莫干山第一次露营大会是哪一年？'],
+      'Y4J6P3': ['有一位来自莫干山的选手参加UTMB2025拿到第一名，TA是谁？', '莫干七尖赛事的距离是多少？', '2025年凯乐石莫干山跑山赛的奖牌形状是什么？'],
+      'X1L9V8': ['莫干山首次网球比赛时间是哪一年？', '漫漫15峰赛事的距离是多少？', '茶马山径赛事的距离是多少？'],
+      'S8M4R1': ['莫干山首次举办的登高赛时间是哪一年？', '云间花径是莫干山和哪座山一起举办的？', '莫干山第一次露营大会是哪一年？'],
+
+      'D7P2X5': ['2023 UTMB获得50K女子组第一名的是谁？', '户外协会陈列了一把世界上独一无二的竹扇，它上面的logo是什么？', '莫干山今年的斯巴达勇士赛是几月几日？'],
+      'H1C8N3': ['有一位来自莫干山的选手参加UTMB2025拿到第一名，TA是谁？', '莫干七尖赛事的距离是多少？', '户外协会陈列了一双参加过巨人之旅330km选手的鞋子，TA是谁？'],
+      'V6A9T4': ['2025年凯乐石莫干山跑山赛的奖牌形状是什么？', '莫干山首次网球比赛时间是哪一年？', '漫漫15峰赛事的距离是多少？'],
+      'R2Q5L8': ['茶马山径赛事的距离是多少？', '莫干山首次举办的登高赛时间是哪一年？', '云间花径是莫干山和哪座山一起举办的？'],
+    };
+    // 队友生日组合密码（同组密码相同）
+    const BIRTHDAY_PASSWORDS = {
+      'S8M4R1': '20011014',                  // 1组(单线) 8位
+      'Q9D4W1': '2002090420000316',          // 2组 16位
+      'Z6T3H7': '2002090420000316',          // 2组 16位
+      'D7P2X5': '19930501',                  // 3组(单线) 8位
+      'F2N8C5': '1994010619990929',          // 4组 16位
+      'Y4J6P3': '1994010619990929',          // 4组 16位
+      'A3X7K9': '1997081719971011',          // 5组 16位
+      'B5R2M8': '1997081719971011',          // 5组 16位
+      'X1L9V8': '19960118',                  // 6组(单线) 8位
+      'R2Q5L8': '199206211987031119901031',  // 7组 24位
+      'V6A9T4': '199206211987031119901031',  // 7组 24位
+      'H1C8N3': '199206211987031119901031',  // 7组 24位
+    };
+    // 传承人信息
+    const PARTNER_LOCATIONS = {
+      'S8M4R1': { inheritor: '钱瑜老师', address: '德清县莫干山镇燎原村莫皋坞41号seean溪岸民宿' },
+      'Q9D4W1': { inheritor: '小辉哥', address: '德清县莫干山镇燎原村南路23号' },
+      'Z6T3H7': { inheritor: '小辉哥', address: '德清县莫干山镇燎原村南路23号' },
+      'D7P2X5': { inheritor: '张靖宇', address: '郡安里马场' },
+      'F2N8C5': { inheritor: '钱丹红老师', address: '德清县黄郭西路50号燎原大楼' },
+      'Y4J6P3': { inheritor: '钱丹红老师', address: '德清县黄郭西路50号燎原大楼' },
+      'A3X7K9': { inheritor: '可乐老师', address: '德清县莫干山镇黄郭路10号haohao bakery好好面包' },
+      'B5R2M8': { inheritor: '可乐老师', address: '德清县莫干山镇黄郭路10号haohao bakery好好面包' },
+      'X1L9V8': { inheritor: '手工竹扇章燕峰老师', address: '德清县石颐路与黄郭东路交叉口西南40米莫干山户外运动协会' },
+      'R2Q5L8': { inheritor: '王岩老师', address: '德清县西坡·劳岭良室北侧自然生花手作坊' },
+      'V6A9T4': { inheritor: '王乾宇馆长', address: '德清县莫干山镇莫干庾街150号莫干山美术馆' },
+      'H1C8N3': { inheritor: '沈彬老师', address: '德清县莫干山镇53-1号荒室咖啡' },
+    };
+    // 问题 → 正确答案
+    const ANSWERS = {
+      '户外协会陈列了一辆保时捷的车模，编号是多少？': ['112'],
+      '户外协会陈列了一把世界上独一无二的竹扇，它上面的logo是什么？': ['保时捷'],
+      '莫干七尖赛事的距离是多少？': ['27.25km', '27.25'],
+      '漫漫15峰赛事的距离是多少？': ['40.70km', '40.70'],
+      '户外协会陈列了一双参加过巨人之旅330km选手的鞋子，TA是谁？': ['张伟强'],
+      '有一位来自莫干山的选手参加UTMB2025拿到第一名，TA是谁？': ['蒙光富'],
+      '2023 UTMB获得50K女子组第一名的是谁？': ['向付召'],
+      '云间花径是莫干山和哪座山一起举办的？': ['四姑娘山'],
+      '莫干山首次网球比赛时间是哪一年？': ['1901', '1901年'],
+      '莫干山首次举办的登高赛时间是哪一年？': ['1934', '1934年'],
+      '莫干山首次登高赛的女子组冠军是谁？': ['徐絮'],
+      '莫干山第一次露营大会是哪一年？': ['1913', '1913年'],
+      '茶马山径赛事的距离是多少？': ['23.2km', '23.2'],
+      '2025年凯乐石莫干山跑山赛的奖牌形状是什么？': ['宝剑', '莫邪剑'],
+      '莫干山将在9月举办的"破晓生万物"莫干山越野赛是哪一天？': ['13日', '13'],
+      '莫干山今年的斯巴达勇士赛是几月几日？': ['11月7日'],
+    };
+    let currentParticipant = null;
+    const PASSWORD = '我是主理人，你是传承人';
+    const GATE_MAP = { 2: [2], 3: [3], 4: [4], 5: [5] };
     const unlocked = new Set([1]);
+
+    // 动态生成 Gate 3 输入框
+    function populateGate3() {
+      const container = document.getElementById('gate-3-fields');
+      const label = document.getElementById('gate-3-label');
+      if (!container || !currentParticipant) return;
+      const teammates = PAIRS[currentParticipant.code] || [];
+      const isSolo = SOLO_CODES.includes(currentParticipant.code);
+      let html = '';
+      if (isSolo) {
+        label.textContent = '◆ 输入你的神秘代码解锁 CARD 03';
+        html = '<div class="gate-row"><input type="password" class="gate-input" id="pw-3" placeholder="请输入你的神秘代码" autocomplete="off"><button class="gate-btn" onclick="unlock(3)"><span>解锁 ↗</span></button></div>';
+      } else if (teammates.length === 1) {
+        label.textContent = '◆ 输入队友的神秘代码解锁 CARD 03';
+        html = '<div class="gate-row"><input type="password" class="gate-input" id="pw-3" placeholder="请输入队友的神秘代码" autocomplete="off"><button class="gate-btn" onclick="unlock(3)"><span>解锁 ↗</span></button></div>';
+      } else if (teammates.length === 2) {
+        label.textContent = '◆ 输入两位队友的神秘代码解锁 CARD 03';
+        html = '<div class="gate-row"><input type="password" class="gate-input" id="pw-3" placeholder="队友1的神秘代码" autocomplete="off"></div>' +
+               '<div class="gate-row" style="margin-top:8px"><input type="password" class="gate-input" id="pw-3b" placeholder="队友2的神秘代码" autocomplete="off"><button class="gate-btn" onclick="unlock(3)"><span>解锁 ↗</span></button></div>';
+      }
+      container.innerHTML = html;
+    }
+
+    function updateCard02(participant) {
+      populateGate3();
+      const welcomeEl = document.getElementById('card02-welcome');
+      const isSolo = SOLO_CODES.includes(participant.code);
+      if (welcomeEl) {
+        welcomeEl.style.display = 'block';
+        if (isSolo) {
+          welcomeEl.innerHTML =
+            '<div class="welcome-greeting">你好 <span>' + participant.nick + '</span>，欢迎解锁你的专属任务</div>' +
+            '<div class="solo-notice">🎉 恭喜你解锁单线任务，在这场剧本杀里，你需要自己完成任务，这将是对你的考验，希望你能顺利完成任务，祝你好运！</div>';
+        } else {
+          welcomeEl.innerHTML =
+            '<div class="welcome-greeting">你好 <span>' + participant.nick + '</span>，欢迎解锁你的专属任务</div>';
+        }
+      }
+    }
+
+    function updateCard03Result(participant) {
+      const resultEl = document.getElementById('card03-result');
+      const contentEl = document.getElementById('card03-content');
+      if (!resultEl || !contentEl) return;
+      const isSolo = SOLO_CODES.includes(participant.code);
+      const teammates = PAIRS[participant.code] || [];
+      if (isSolo) {
+        resultEl.style.display = 'none';
+        // 更新 Card 03 标题和内容为单线任务版本
+        const heroTitle = document.querySelector('[data-card="3"] .card-hero-title');
+        const heroSub = document.querySelector('[data-card="3"] .card-hero-sub');
+        const cardTitle = document.querySelector('[data-card="3"] .card-title');
+        const cardHint = document.querySelector('[data-card="3"] .card-hint');
+        if (heroTitle) heroTitle.textContent = '单线任务';
+        if (heroSub) heroSub.textContent = 'SOLO MISSION';
+        if (cardTitle) cardTitle.textContent = '独自挑战';
+        contentEl.innerHTML = '<div class="solo-notice">🎭 这是一场单线任务，你需要独自完成所有挑战。没有队友，只有你自己。祝你好运！</div>';
+        if (cardHint) cardHint.innerHTML = '🎯 独自完成这场剧本杀挑战，证明你的实力。';
+      } else {
+        const partnerNicks = teammates.map(c => PARTICIPANTS[c] ? PARTICIPANTS[c].nick : c).join('、');
+        resultEl.style.display = 'none';
+        contentEl.innerHTML = '<div class="partner-result">🤝 恭喜你成功找到自己的剧本杀搭子，你的搭子是 <strong>' + partnerNicks + '</strong></div>';
+      }
+    }
+
+    function updateCard04() {
+      if (!currentParticipant) return;
+      const questions = PARTICIPANT_QUESTIONS[currentParticipant.code];
+      if (!questions) return;
+      for (let i = 0; i < 3; i++) {
+        const el = document.getElementById('q' + (i + 1));
+        if (el) el.textContent = questions[i];
+      }
+    }
+
+    function updateCard04Content() {
+      if (!currentParticipant) return;
+      const loc = PARTNER_LOCATIONS[currentParticipant.code];
+      if (!loc) return;
+      const el = document.getElementById('card04-location');
+      if (el) {
+        el.innerHTML = '<p class="card-copy">寻找传承人 <strong>' + loc.inheritor + '</strong></p>' +
+          '<div class="card-quote">📍 地址：' + loc.address + '</div>';
+      }
+    }
+
+    function verifyUltimate() {
+      const input = document.getElementById('pw-ultimate');
+      const errEl = document.getElementById('err-ultimate');
+      const okEl = document.getElementById('ok-ultimate');
+      const ultGate = document.getElementById('ultimate-gate');
+      errEl.style.display = 'none';
+      okEl.style.display = 'none';
+      if (input.value.trim() === '1901MGS') {
+        okEl.style.display = 'block';
+        ultGate.style.display = 'none';
+        unlocked.add(6);
+        const card6 = document.querySelector('.mission-card[data-card="6"]');
+        if (card6) {
+          card6.style.display = 'block';
+          setTimeout(() => card6.classList.add('visible'), 50);
+          card6.style.animation = 'unlockFlash 1.2s ease forwards';
+          setTimeout(() => card6.style.animation = '', 1400);
+        }
+        updateProgress();
+        setTimeout(() => {
+          if (card6) card6.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }, 300);
+      } else {
+        errEl.style.display = 'block';
+        input.value = '';
+        input.focus();
+      }
+    }
+
+    function verifyAnswers() {
+      if (!currentParticipant) return;
+      const questions = PARTICIPANT_QUESTIONS[currentParticipant.code];
+      if (!questions) return;
+      const errEl = document.getElementById('answer-error');
+      const okEl = document.getElementById('answer-success');
+      errEl.style.display = 'none';
+      okEl.style.display = 'none';
+      const a1 = document.getElementById('a1');
+      const isBackdoor = a1 && a1.value.trim() === '莫干山';
+      let allCorrect = isBackdoor;
+      if (!isBackdoor) {
+        for (let i = 0; i < 3; i++) {
+          const input = document.getElementById('a' + (i + 1));
+          const accepted = ANSWERS[questions[i]];
+          if (!accepted || !accepted.includes(input.value.trim())) {
+            allCorrect = false;
+            input.style.borderColor = 'var(--clay)';
+          } else {
+            input.style.borderColor = 'var(--moss)';
+          }
+        }
+      }
+      if (allCorrect) {
+        okEl.style.display = 'block';
+        // 显示终极密码
+        const ultGate = document.getElementById('ultimate-gate');
+        if (ultGate) {
+          ultGate.style.display = 'block';
+          setTimeout(() => ultGate.scrollIntoView({ behavior: 'smooth', block: 'center' }), 300);
+        }
+      } else {
+        errEl.style.display = 'block';
+        setTimeout(() => {
+          document.querySelectorAll('.answer-input').forEach(el => el.style.borderColor = '');
+        }, 1500);
+      }
+    }
 
     function unlock(n) {
       const input = document.getElementById('pw-' + n);
       const err = document.getElementById('err-' + n);
       const ok = document.getElementById('ok-' + n);
       const gate = document.getElementById('gate-' + n);
-      if (input.value.trim() === PASSWORD) {
+      // Gate 2: 验证神秘代码
+      if (n === 2) {
+        const code = input.value.trim().toUpperCase();
+        const participant = PARTICIPANTS[code];
+        if (participant) {
+          err.style.display = 'none';
+          ok.style.display = 'block';
+          gate.style.display = 'none';
+          currentParticipant = { ...participant, code: code };
+          updateCard02(participant);
+          unlocked.add(2);
+          const card = document.querySelector('.mission-card[data-card="2"]');
+          if (card) {
+            card.style.display = 'block';
+            setTimeout(() => card.classList.add('visible'), 50);
+            card.style.animation = 'unlockFlash 1.2s ease forwards';
+            setTimeout(() => card.style.animation = '', 1400);
+          }
+          const nextGate = document.getElementById('gate-3');
+          if (nextGate) {
+            nextGate.style.display = 'block';
+            setTimeout(() => nextGate.scrollIntoView({ behavior: 'smooth', block: 'center' }), 300);
+          }
+          updateProgress();
+          return;
+        }
+      }
+      // Gate 3: 搭子密码验证
+      if (n === 3) {
+        const teammates = PAIRS[currentParticipant.code] || [];
+        const isSolo = SOLO_CODES.includes(currentParticipant.code);
+        let allCorrect = false;
+        if (isSolo) {
+          allCorrect = input.value.trim().toUpperCase() === currentParticipant.code;
+        } else if (teammates.length === 1) {
+          allCorrect = input.value.trim().toUpperCase() === teammates[0];
+        } else if (teammates.length === 2) {
+          const input2 = document.getElementById('pw-3b');
+          const v1 = input.value.trim().toUpperCase();
+          const v2 = input2 ? input2.value.trim().toUpperCase() : '';
+          allCorrect = teammates.includes(v1) && teammates.includes(v2) && v2 !== v1;
+        }
+        if (allCorrect) {
+          err.style.display = 'none';
+          ok.style.display = 'block';
+          gate.style.display = 'none';
+          unlocked.add(3);
+          const card = document.querySelector('.mission-card[data-card="3"]');
+          if (card) {
+            card.style.display = 'block';
+            setTimeout(() => card.classList.add('visible'), 50);
+            card.style.animation = 'unlockFlash 1.2s ease forwards';
+            setTimeout(() => card.style.animation = '', 1400);
+          }
+          updateCard03Result(currentParticipant);
+          const nextGate = document.getElementById('gate-4');
+          if (nextGate) {
+            nextGate.style.display = 'block';
+            setTimeout(() => nextGate.scrollIntoView({ behavior: 'smooth', block: 'center' }), 300);
+          }
+          updateProgress();
+          return;
+        }
+      }
+      // Gate 5: 生日组合验证
+      if (n === 5) {
+        const idNum = BIRTHDAY_PASSWORDS[currentParticipant.code];
+        if (idNum && input.value.trim() === idNum) {
+          err.style.display = 'none';
+          ok.style.display = 'block';
+          gate.style.display = 'none';
+          unlocked.add(5);
+          const card = document.querySelector('.mission-card[data-card="5"]');
+          if (card) {
+            card.style.display = 'block';
+            setTimeout(() => card.classList.add('visible'), 50);
+            card.style.animation = 'unlockFlash 1.2s ease forwards';
+            setTimeout(() => card.style.animation = '', 1400);
+          }
+          updateCard04();
+          updateProgress();
+          setTimeout(() => {
+            if (card) card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          }, 300);
+          return;
+        }
+      }
+      // Gate 4: 通用密码
+      if (n === 4 && input.value.trim() === PASSWORD) {
         err.style.display = 'none';
         ok.style.display = 'block';
         gate.style.display = 'none';
         GATE_MAP[n].forEach(cardNum => {
           unlocked.add(cardNum);
-          const card = document.querySelector(`.mission-card[data-card="${cardNum}"]`);
+          const card = document.querySelector('.mission-card[data-card="' + cardNum + '"]');
           if (card) {
             card.style.display = 'block';
             setTimeout(() => card.classList.add('visible'), 50);
@@ -296,26 +815,37 @@
             setTimeout(() => card.style.animation = '', 1400);
           }
         });
+        if (n === 4) { updateCard04(); updateCard04Content(); }
         const nextGate = document.getElementById('gate-' + (n + 1));
         if (nextGate) {
           nextGate.style.display = 'block';
           setTimeout(() => nextGate.scrollIntoView({ behavior: 'smooth', block: 'center' }), 300);
         }
         updateProgress();
-      } else {
-        err.style.display = 'block';
-        ok.style.display = 'none';
-        input.value = '';
-        input.focus();
-        input.style.borderColor = 'var(--clay)';
-        setTimeout(() => { input.style.borderColor = ''; }, 1200);
+        return;
       }
+      // 密码错误
+      err.style.display = 'block';
+      ok.style.display = 'none';
+      input.value = '';
+      input.focus();
+      input.style.borderColor = 'var(--clay)';
+      setTimeout(() => { input.style.borderColor = ''; }, 1200);
     }
 
-    document.querySelectorAll('.gate-input').forEach(input => {
-      input.addEventListener('keydown', e => {
-        if (e.key === 'Enter') unlock(parseInt(input.id.replace('pw-', '')));
-      });
+    // Enter 键触发解锁
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Enter') {
+        const active = document.activeElement;
+        if (active && active.id) {
+          if (active.id === 'pw-ultimate') {
+            verifyUltimate();
+          } else if (active.id.startsWith('pw-')) {
+            const n = parseInt(active.id.replace('pw-3b', '3').replace('pw-', ''));
+            unlock(n);
+          }
+        }
+      }
     });
 
     function updateProgress() {
@@ -324,7 +854,7 @@
         const cardNum = i + 1;
         bar.className = unlocked.has(cardNum) ? 'done' : '';
       });
-      for (let i = 0; i < 5; i++) {
+      for (let i = 0; i < 6; i++) {
         if (!unlocked.has(i + 1)) { bars[i].className = 'active'; break; }
       }
     }
@@ -335,7 +865,9 @@
     });
     document.getElementById('gate-2').style.display = 'block';
     document.getElementById('gate-3').style.display = 'none';
+    document.getElementById('gate-5').style.display = 'none';
     document.getElementById('gate-4').style.display = 'none';
+    document.getElementById('gate-5').style.display = 'none';
 
     addEventListener('click', e => {
       const r = document.createElement('span');
