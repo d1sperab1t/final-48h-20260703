@@ -263,7 +263,28 @@
       text-align:center; position:relative; z-index:1;
     }
 
-    @media(max-width:600px){ .page{width:100%;border:0} .page-header{padding:72px 18px 24px} .cards-wrap{padding:18px} }
+    @media(max-width:600px){
+      .page{width:100%;border:0}
+      .page-header{padding:72px 18px 24px}
+      .cards-wrap{padding:18px}
+      .gate{padding:18px}
+      .gate-row{flex-wrap:wrap}
+      .gate-input{font-size:14px;letter-spacing:2px;min-width:0}
+      .gate-btn{width:100%;justify-content:center;margin-top:8px}
+      .card-title{font-size:18px}
+      .card-copy{font-size:12px}
+      .card-step .step-text{font-size:11px}
+      .answer-input{font-size:12px;padding:8px 10px}
+      .clue-text{font-size:11px}
+      .clue-label{font-size:9px;min-width:44px}
+      .fixed-nav a{font-size:9px;padding:6px 10px}
+      .page-footer{font-size:9px;padding:14px 18px 20px}
+      #ultimate-gate{padding:24px 18px 28px}
+      #ultimate-gate .gate-input{font-size:16px;letter-spacing:4px}
+      #ultimate-gate .gate-btn{padding:12px 18px}
+      #ultimate-gate .ultimate-icon{width:48px;height:48px}
+      #ultimate-gate .ultimate-icon span{font-size:22px}
+    }
     @media(prefers-reduced-motion:reduce){ .page-header::before{animation:none} *{scroll-behavior:auto} }
   </style>
 </head>
